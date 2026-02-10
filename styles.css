@@ -214,7 +214,146 @@
 .service-card:hover .service-img {
   transform: scale(1.03);
 }
+/* EQUIPO (HU-03) */
+.team-section {
+   background: linear-gradient(
+    135deg,
+    #f4fbf7 0%,
+    #e6f7ee 50%,
+    #d7f2e3 100%
+  );
+}
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: clamp(var(--space-5), 4vw, var(--space-7));
+}
 
+.team-card-info p {
+  color: var(--grey-600);
+  font-size: 0.95rem;
+}
+
+.team-card {
+  position: relative;
+  background: white;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.team-card:hover,
+.team-card:focus-within {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.team-media {
+  position: relative;
+  overflow: hidden;
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+}
+
+.team-card-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease; /* Extra PRO */
+}
+
+.team-card:hover .team-card-image,
+body.kbd-focus .team-card:focus-within .team-card-image {
+  transform: scale(1.04);
+}
+
+.team-card-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(217, 243, 236, 0.12) 35%,
+    rgba(55, 93, 79, 0.18) 60%,
+    rgba(55, 93, 79, 0.5) 100%
+  );
+}
+
+@supports (backdrop-filter: blur(6px)) {
+  .team-card-overlay {
+    backdrop-filter: saturate(120%) blur(6px);
+  }
+}
+
+.team-card-overlay-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--space-5) var(--space-6);
+  color: white;
+
+  transform: translateY(12px);
+  opacity: 0;
+  transition: transform 0.3s ease-out 0.05s,
+              opacity 0.3s ease-out 0.05s;
+}
+
+.team-card-specialty {
+  font-weight: 800;
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.2px;
+}
+
+.team-card-desc {
+  color: #e7f0ed;
+  line-height: 1.55;
+}
+
+.team-card:hover .team-card-overlay,
+body.kbd-focus .team-card:focus-within .team-card-overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.team-card:hover .team-card-overlay-content,
+body.kbd-focus .team-card:focus-within .team-card-overlay-content {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.team-card-info {
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.team-card-info h3 {
+  font-size: 1.1rem;
+  color: var(--sage-800);
+  font-weight: 800;
+  margin-bottom: 0.35rem;
+}
+
+.team-card-role {
+  color: var(--green-700);
+  font-weight: 500;
+}
+
+.team-card:focus-visible {
+  outline: 3px solid rgba(104, 191, 162, 0.35);
+  outline-offset: 3px;
+}
+
+.team-card-bio {
+  display: none;
+}
 /* RESERVAS (HU-04, HU-05, HU-06, HU-07) */
 .booking-card {
   background: var(--white);
