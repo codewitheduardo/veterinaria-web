@@ -249,6 +249,47 @@ if (carruselServicios) {
     carruselServicios.scrollLeft = scrollInicial - desplazamiento;
   });
 }
+// ========================================
+// EQUIPO (HU-03)
+// ========================================
+import { profesionales } from "./core/profesionales.js";
+
+const teamGrid = document.getElementById("teamGrid");
+
+function renderizarEquipo() {
+  if (!teamGrid) return;
+
+  teamGrid.innerHTML = profesionales
+    .map(
+      (p) => `
+      <div class="team-card" role="listitem" aria-label="${p.nombre} — ${p.rol}" tabindex="0">
+
+        <div class="team-media">
+          <img src="${p.img}" alt="${p.nombre}" class="team-card-image">
+
+          <div class="team-card-overlay" aria-hidden="true">
+            <div class="team-card-overlay-content">
+              <p class="team-card-specialty">${p.especialidad}</p>
+              <p class="team-card-desc">${p.descripcion}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card-info">
+          <h3>${p.nombre}</h3>
+          <p class="team-card-role">${p.rol}</p>
+        </div>
+
+        <div class="team-card-bio" aria-hidden="true">
+          <p class="team-card-specialty">${p.especialidad}</p>
+          <p class="team-card-desc">${p.descripcion}</p>
+        </div>
+
+      </div>
+    `,
+    )
+    .join("");
+}
 
 // =======================
 // RESERVAS (HU-04, HU-05, HU-06, HU-07)
