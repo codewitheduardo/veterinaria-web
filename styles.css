@@ -214,3 +214,81 @@
 .service-card:hover .service-img {
   transform: scale(1.03);
 }
+
+/* RESERVAS (HU-04, HU-05, HU-06, HU-07) */
+.booking-card {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: clamp(var(--space-6), 4vw, var(--space-8));
+  box-shadow: var(--shadow-md);
+  width: min(740px, 100%);
+  margin-inline: auto;
+}
+.booking-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.form-group label {
+  font-weight: 700;
+  color: var(--sage-800);
+  font-size: 0.95rem;
+}
+.form-group input,
+.form-group select {
+  padding: 0.8rem 0.95rem;
+  border: 1.8px solid var(--mint-200);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-family: var(--font-body);
+  color: var(--sage-800);
+  background: var(--white);
+  transition: all 0.25s;
+}
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--green-700);
+  box-shadow: 0 0 0 4px rgba(104, 191, 162, 0.16);
+}
+.form-group input:disabled,
+.form-group select:disabled {
+  background: var(--mint-100);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+.field-error {
+  color: var(--red-500);
+  font-size: 0.82rem;
+  min-height: 1em;
+}
+.form-submit {
+  margin-top: var(--space-1);
+  grid-column: 1 / -1;
+}
+
+.form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 2.6rem;
+  background-image: url("../img/ui/down-arrow-backup-2-svgrepo-com.svg");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 18px) 62%;
+  background-size: 14px 14px;
+}
+
+@media (min-width: 992px) {
+  .booking-form {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+  .booking-card {
+    width: min(900px, 100%);
+  }
+}

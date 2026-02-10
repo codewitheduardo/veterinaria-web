@@ -249,3 +249,279 @@ if (carruselServicios) {
     carruselServicios.scrollLeft = scrollInicial - desplazamiento;
   });
 }
+
+// =======================
+// RESERVAS (HU-04, HU-05, HU-06, HU-07)
+// =======================
+import { esDomingo } from "./core/tiempo.js";
+
+import {
+  obtenerHorariosDisponiblesPorProfesional,
+  estaHorarioOcupado,
+} from "./core/reservas.js";
+
+import {
+  obtenerProfesionalPorId,
+  obtenerProfesionalesPorServicio,
+} from "./core/profesionales.js";
+
+import { obtenerDuracionServicioMinutos } from "./core/servicios.js";
+
+const formularioReserva = document.getElementById("bookingForm");
+const selectServicio = document.getElementById("service");
+const selectProfesional = document.getElementById("professional");
+const inputFecha = document.getElementById("date");
+const selectHora = document.getElementById("time");
+
+const validacionesCampos = {
+  ownerName: (v) => (v.trim().length >= 2 ? "" : "Ingresá tu nombre."),
+  petName: (v) => (v.trim().length >= 2 ? "" : "Ingresá el nombre de tu mascota."),
+  phone: (v) =>
+    /\d{7,}/.test(v.replace(/\D/g, "")) ? "" : "Ingresá un teléfono válido.",
+  service: (v) => (v ? "" : "Seleccioná un servicio."),
+  professional: (v) => (v ? "" : "Seleccioná un profesional."),
+  date: (v) => (v ? "" : "Seleccioná una fecha."),
+  time: (v) => (v ? "" : "Seleccioná un horario."),
+};
+
+function mostrarErrorCampo(idCampo, mensaje) {
+  const elemento = document.querySelector(`[data-error-for="${idCampo}"]`);
+  if (elemento) elemento.textContent = mensaje || "";
+}
+
+selectServicio.innerHTML =
+  '<option value="">Seleccioná un servicio</option>' +
+  servicios
+    .map(
+      (servicio) =>
+        `<option value="${servicio.id}">
+          ${servicio.titulo} — ${formatearPrecio(servicio.precio)}
+        </option>`,
+    )
+    .join("");
+
+selectServicio.addEventListener("change", () => {
+  const idServicio = Number(selectServicio.value);
+  mostrarErrorCampo("service", validacionesCampos.service(idServicio));
+
+  selectProfesional.value = "";
+  selectProfesional.disabled = true;
+  selectProfesional.innerHTML = '<option value="">Primero elegí un servicio</option>';
+
+  inputFecha.value = "";
+  inputFecha.disabled = true;
+
+  selectHora.value = "";
+  selectHora.disabled = true;
+  selectHora.innerHTML = '<option value="">Elegí fecha y profesional</option>';
+
+  if (!idServicio) return;
+
+  const profesionalesDisponibles = obtenerProfesionalesPorServicio(idServicio);
+
+  selectProfesional.disabled = false;
+  selectProfesional.innerHTML =
+    '<option value="">Seleccioná un profesional</option>' +
+    profesionalesDisponibles
+      .map((p) => `<option value="${p.id}">${p.nombre}</option>`)
+      .join("");
+});
+
+selectProfesional.addEventListener("change", () => {
+  mostrarErrorCampo(
+    "professional",
+    validacionesCampos.professional(selectProfesional.value),
+  );
+
+  inputFecha.value = "";
+  mostrarErrorCampo("date", "");
+  inputFecha.disabled = !selectProfesional.value;
+
+  selectHora.value = "";
+  selectHora.disabled = true;
+  selectHora.innerHTML = '<option value="">Elegí fecha y profesional</option>';
+});
+
+inputFecha.addEventListener("change", () => {
+  mostrarErrorCampo("date", validacionesCampos.date(inputFecha.value));
+
+  const idProfesional = Number(selectProfesional.value);
+  const fecha = inputFecha.value;
+
+  const idServicio = Number(selectServicio.value);
+  const servicio = obtenerServicioPorId(idServicio);
+  const duracionMinutos = obtenerDuracionServicioMinutos(servicio);
+
+  if (!idProfesional || !fecha) {
+    selectHora.disabled = true;
+    return;
+  }
+
+  if (esDomingo(fecha)) {
+    selectHora.disabled = true;
+    selectHora.innerHTML = '<option value="">Domingo cerrado</option>';
+    return;
+  }
+
+  const horariosDisponibles = obtenerHorariosDisponiblesPorProfesional(
+    idProfesional,
+    fecha,
+    obtenerReservasStorage,
+    duracionMinutos,
+  );
+
+  if (horariosDisponibles.length === 0) {
+    selectHora.disabled = true;
+    selectHora.innerHTML = '<option value="">No hay horarios disponibles</option>';
+    return;
+  }
+
+  selectHora.disabled = false;
+  selectHora.innerHTML =
+    '<option value="">Seleccioná un horario</option>' +
+    horariosDisponibles.map((h) => `<option value="${h}">${h}</option>`).join("");
+});
+
+formularioReserva.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const nombreDueno = document.getElementById("ownerName").value;
+  const nombreMascota = document.getElementById("petName").value;
+  const telefono = document.getElementById("phone").value;
+
+  const idServicio = Number(selectServicio.value);
+  const idProfesional = Number(selectProfesional.value);
+  const fecha = inputFecha.value;
+  const hora = selectHora.value;
+
+  const errores = {
+    ownerName: validacionesCampos.ownerName(nombreDueno),
+    petName: validacionesCampos.petName(nombreMascota),
+    phone: validacionesCampos.phone(telefono),
+    service: validacionesCampos.service(idServicio),
+    professional: validacionesCampos.professional(idProfesional),
+    date: validacionesCampos.date(fecha),
+    time: validacionesCampos.time(hora),
+  };
+
+  Object.entries(errores).forEach(([campo, msg]) => mostrarErrorCampo(campo, msg));
+  if (Object.values(errores).some(Boolean)) return;
+
+  const servicio = obtenerServicioPorId(idServicio);
+  const duracionMinutos = obtenerDuracionServicioMinutos(servicio);
+
+  if (
+    estaHorarioOcupado(
+      idProfesional,
+      fecha,
+      hora,
+      obtenerReservasStorage,
+      duracionMinutos,
+    )
+  ) {
+    abrirModal(`
+      <h2>Horario no disponible</h2>
+      <p>El horario seleccionado se solapa con otra reserva para este profesional.</p>
+      <a href="#reservar" class="btn btn-primary btn-block" data-accion="cerrar-modal">Volver</a>
+    `);
+    return;
+  }
+
+  const profesional = obtenerProfesionalPorId(idProfesional);
+
+  const reserva = {
+    id: crypto?.randomUUID?.() || String(Date.now()),
+    dueno: nombreDueno.trim(),
+    mascota: nombreMascota.trim(),
+    telefono: telefono.trim(),
+    servicioId: idServicio,
+    servicio: servicio?.titulo || "",
+    profesionalId: idProfesional,
+    profesional: profesional?.nombre || "",
+    fecha,
+    hora,
+    duracionMinutos,
+    estado: "pendiente",
+    createdAt: new Date().toISOString(),
+  };
+
+  agregarReservaStorage(reserva);
+
+  abrirModal(`
+    <h2>✅ Reserva Confirmada</h2>
+    <div class="modal-info">
+      <p><strong>Dueño:</strong> ${reserva.dueno}</p>
+      <p><strong>Mascota:</strong> ${reserva.mascota}</p>
+      <p><strong>Servicio:</strong> ${reserva.servicio}</p>
+      <p><strong>Profesional:</strong> ${reserva.profesional}</p>
+      <p><strong>Fecha:</strong> ${fecha}</p>
+      <p><strong>Hora:</strong> ${hora}</p>
+      <p><strong>Duración:</strong> ${duracionMinutos} min</p>
+    </div>
+    <a href="#reservar" class="btn btn-primary btn-block" data-accion="cerrar-modal">Aceptar</a>
+  `);
+
+  formularioReserva.reset();
+
+  selectProfesional.disabled = true;
+  selectProfesional.innerHTML = '<option value="">Primero elegí un servicio</option>';
+
+  inputFecha.disabled = true;
+
+  selectHora.disabled = true;
+  selectHora.innerHTML = '<option value="">Elegí fecha y profesional</option>';
+});
+
+function resetearFormularioReserva() {
+  if (!formularioReserva) return;
+
+  formularioReserva.reset();
+
+  Object.keys(validacionesCampos).forEach((idCampo) => {
+    mostrarErrorCampo(idCampo, "");
+  });
+
+  if (selectServicio) {
+    selectServicio.value = "";
+  }
+
+  if (selectProfesional) {
+    selectProfesional.value = "";
+    selectProfesional.disabled = true;
+    selectProfesional.innerHTML =
+      '<option value="">Primero elegí un servicio</option>';
+  }
+
+  if (inputFecha) {
+    inputFecha.value = "";
+    inputFecha.disabled = true;
+  }
+
+  if (selectHora) {
+    selectHora.value = "";
+    selectHora.disabled = true;
+    selectHora.innerHTML = '<option value="">Elegí fecha y profesional</option>';
+  }
+}
+
+const _mostrarSoloSeccionOriginal = mostrarSoloSeccion;
+mostrarSoloSeccion = function (idObjetivo) {
+  const estabaEnReservar = resolverSeccionDesdeHash(location.hash) === "reservar";
+
+  _mostrarSoloSeccionOriginal(idObjetivo);
+
+  if (estabaEnReservar && idObjetivo !== "reservar") {
+    resetearFormularioReserva();
+  }
+};
+
+const _mostrarModoInicioOriginal = mostrarModoInicio;
+mostrarModoInicio = function () {
+  const estabaEnReservar = resolverSeccionDesdeHash(location.hash) === "reservar";
+
+  _mostrarModoInicioOriginal();
+
+  if (estabaEnReservar) {
+    resetearFormularioReserva();
+  }
+};
