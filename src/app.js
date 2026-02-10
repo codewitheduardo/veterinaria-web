@@ -525,3 +525,36 @@ mostrarModoInicio = function () {
     resetearFormularioReserva();
   }
 };
+
+// =======================
+// PERSISTENCIA LOCAL DE DATOS (HU-12)
+// =======================
+const CLAVE_STORAGE_RESERVAS = "reservas";
+
+function obtenerReservasStorage() {
+  try {
+    const datos = localStorage.getItem(CLAVE_STORAGE_RESERVAS);
+    return datos ? JSON.parse(datos) : [];
+  } catch (e) {
+    console.warn("Error leyendo reservas", e);
+    return [];
+  }
+}
+
+function guardarReservasStorage(reservas) {
+  localStorage.setItem(CLAVE_STORAGE_RESERVAS, JSON.stringify(reservas));
+}
+
+function agregarReservaStorage(reserva) {
+  const reservas = obtenerReservasStorage();
+  reservas.push(reserva);
+  guardarReservasStorage(reservas);
+}
+
+function cancelarReservaStorage(index) {
+  const reservas = obtenerReservasStorage();
+  if (reservas[index]) {
+    reservas[index].estado = "cancelado";
+    guardarReservasStorage(reservas);
+  }
+}
