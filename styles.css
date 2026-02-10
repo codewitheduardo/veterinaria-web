@@ -1,0 +1,216 @@
+/* SERVICIOS (HU-01, HU-02) */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+.modal.active {
+  display: block;
+}
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+}
+.modal-content {
+  position: relative;
+  background: var(--white);
+  max-width: 640px;
+  margin: 4% auto;
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-lg);
+  animation: modalSlideIn 0.25s ease-out;
+}
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.modal-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--mint-200);
+  color: var(--green-700);
+  font-size: 1.6rem;
+  display: grid;
+  place-items: center;
+  transition: all 0.25s;
+  box-shadow: var(--shadow-xs);
+}
+.modal-close:hover {
+  background: var(--green-700);
+  color: var(--white);
+  transform: rotate(90deg);
+}
+#modalBody h2 {
+  font-size: 1.5rem;
+  color: var(--sage-800);
+  margin-bottom: 0.6rem;
+}
+#modalBody p {
+  color: var(--grey-600);
+  line-height: 1.8;
+  margin-bottom: 0.4rem;
+}
+#modalBody .modal-price {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--green-700);
+  margin-top: 0.7rem;
+}
+#modalBody .modal-info {
+  background: var(--mint-100);
+  border: 1px solid var(--mint-200);
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  margin-top: 0.9rem;
+  line-height: 1.7;
+}
+#modalBody .modal-info strong {
+  color: var(--green-700);
+}
+#modalBody .btn {
+  margin-top: var(--space-6);
+}
+
+#modalBody .modal-legal {
+  color: var(--grey-600);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin-top: 0.9rem;
+  margin-inline: 10px;
+}
+
+.services-section {
+  background: var(--white);
+}
+
+.carousel-wrapper {
+  position: relative;
+}
+
+.carousel {
+  display: flex;
+  gap: var(--space-5);
+
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+
+  padding: 0.75rem clamp(var(--space-4), 3vw, var(--space-6));
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+
+  cursor: grab;
+  touch-action: pan-x;
+}
+
+.carousel:active {
+  cursor: grabbing;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-wrapper {
+  overflow: visible;
+}
+
+.service-card {
+  flex: 0 0 clamp(280px, 40vw, 360px);
+  scroll-snap-align: start;
+
+  background: var(--mint-100);
+  border: 1px solid var(--mint-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-xs);
+  transition: all 0.25s;
+
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-height: 220px;
+}
+
+.service-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.service-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.service-badge.medical {
+  background: #e6f0fd;
+  color: #3b6fb1;
+  border: 1px solid #d6e6fb;
+}
+
+.service-badge.aesthetic {
+  background: #fde6ef;
+  color: #b43e7b;
+  border: 1px solid #f6d8e7;
+}
+
+.service-card h3 {
+  font-size: 1.2rem;
+  color: var(--sage-800);
+  font-weight: 800;
+}
+
+.service-card p {
+  color: var(--grey-600);
+  flex: 1;
+}
+
+.service-price {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--green-700);
+}
+
+.service-media {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.04);
+  background: #fff;
+}
+
+.service-img {
+  width: 100%;
+  height: 140px;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.service-card:hover .service-img {
+  transform: scale(1.03);
+}
