@@ -742,7 +742,256 @@ mostrarModoInicio = function () {
     resetearFormularioReserva();
   }
 };
+// ========================================
+// ADMIN (HU-08)
+// ========================================
+import {
+  validarCredencialesAdmin,
+  obtenerFechaHoyISO,
+  obtenerClaveSesionAdmin,
+  estaAdminLogueadoDesdeValor,
+  valorSesionAdminLogueado,
+} from "./core/admin.js";
 
+const tarjetaLoginAdmin = document.getElementById("adminLoginCard");
+const formularioLoginAdmin = document.getElementById("adminLoginForm");
+const panelAdmin = document.getElementById("adminPanel");
+const filtroFechaAdmin = document.getElementById("adminFilterDate");
+const botonActualizarAdmin = document.getElementById("adminUpdateBtn");
+const botonLogoutAdmin = document.getElementById("adminLogoutBtn");
+
+const CLAVE_SESION_ADMIN = obtenerClaveSesionAdmin();
+
+function estaAdminLogueadoOk() {
+  return estaAdminLogueadoDesdeValor(
+    sessionStorage.getItem(CLAVE_SESION_ADMIN),
+  );
+}
+
+function setearAdminLogueado(estado) {
+  if (estado)
+    sessionStorage.setItem(CLAVE_SESION_ADMIN, valorSesionAdminLogueado());
+  else sessionStorage.removeItem(CLAVE_SESION_ADMIN);
+}
+
+function actualizarTituloAdmin() {
+  const titulo = document.getElementById("admin-title");
+  if (!titulo) return;
+
+  titulo.textContent = estaAdminLogueadoOk()
+    ? "Gestión de Reservas"
+    : "Acceso Admin";
+}
+
+function setearFiltroAdminHoy() {
+  if (!filtroFechaAdmin) return;
+  filtroFechaAdmin.value = obtenerFechaHoyISO();
+}
+
+function alternarUIAdmin() {
+  actualizarTituloAdmin();
+  if (!tarjetaLoginAdmin || !panelAdmin) return;
+
+  if (estaAdminLogueadoOk()) {
+    tarjetaLoginAdmin.style.display = "none";
+    panelAdmin.style.display = "block";
+
+    setearFiltroAdminHoy();
+    renderizarTablaAdmin();
+  } else {
+    panelAdmin.style.display = "none";
+    tarjetaLoginAdmin.style.display = "block";
+    refrescarFormularioAdmin();
+  }
+  actualizarNavPorAutenticacion();
+}
+
+formularioLoginAdmin?.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("adminEmail")?.value.trim() || "";
+  const clave = document.getElementById("adminPassword")?.value.trim() || "";
+
+  mostrarErrorCampo("adminEmail", email ? "" : "Ingresá el email.");
+  mostrarErrorCampo("adminPassword", clave ? "" : "Ingresá la contraseña.");
+  if (!email || !clave) return;
+
+  if (validarCredencialesAdmin(email, clave)) {
+    setearAdminLogueado(true);
+    alternarUIAdmin();
+
+    mostrarSoloSeccion("admin");
+    actualizarNavPorAutenticacion();
+
+    abrirModal(`
+      <h2 id="modalTitle">Bienvenido</h2>
+      <p>Accediste al panel de administración.</p>
+      <button class="btn btn-primary btn-block" data-accion="cerrar-modal">Continuar</button>
+    `);
+  } else {
+    abrirModal(`
+      <h2 id="modalTitle">Acceso denegado</h2>
+      <p>Credenciales incorrectas. Intentá nuevamente.</p>
+      <button class="btn btn-primary btn-block" data-accion="cerrar-modal">Aceptar</button>
+    `);
+  }
+});
+
+botonLogoutAdmin?.addEventListener("click", () => {
+  setearAdminLogueado(false);
+  alternarUIAdmin();
+
+  mostrarModoInicio();
+  actualizarNavPorAutenticacion();
+});
+
+botonActualizarAdmin?.addEventListener("click", () => {
+  renderizarTablaAdmin();
+});
+
+function refrescarFormularioAdmin() {
+  if (!formularioLoginAdmin) return;
+
+  formularioLoginAdmin.reset();
+
+  mostrarErrorCampo("adminEmail", "");
+  mostrarErrorCampo("adminPassword", "");
+
+  const emailInput = document.getElementById("adminEmail");
+  emailInput?.focus();
+}
+
+// ========================================
+// ADMIN (HU-09)
+// ========================================
+import { obtenerReservasParaAdmin } from "./core/admin.js";
+
+const cuerpoTablaAdmin = document.getElementById("adminTableBody");
+
+function renderizarTablaAdmin() {
+  actualizarReservasFinalizadas();
+
+  const reservas = obtenerReservasStorage();
+  const fechaFiltro = filtroFechaAdmin?.value || "";
+
+  const reservasAMostrar = obtenerReservasParaAdmin(reservas, fechaFiltro);
+
+  cuerpoTablaAdmin.innerHTML = reservasAMostrar
+    .map((r) => {
+      const indice = reservas.indexOf(r);
+      const deshabilitado = r.estado === "cancelado";
+
+      return `
+        <tr>
+          <td data-label="Dueño">${r.dueno}</td>
+          <td data-label="Mascota">${r.mascota}</td>
+          <td data-label="Teléfono">${r.telefono}</td>
+          <td data-label="Fecha">${new Date(r.fecha + "T00:00:00").toLocaleDateString("es-AR")}</td>
+          <td data-label="Hora">${r.hora}</td>
+          <td data-label="Servicio">${r.servicio}</td>
+          <td data-label="Profesional">${r.profesional}</td>
+          <td data-label="Estado">
+            <span class="status-badge ${r.estado}">${r.estado}</span>
+          </td>
+          <td data-label="Acción">
+            <button class="btn-cancel" data-indice="${indice}" ${deshabilitado ? "disabled" : ""}>
+              Cancelar
+            </button>
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  cuerpoTablaAdmin.querySelectorAll(".btn-cancel").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const indice = Number(btn.dataset.indice);
+      abrirModalConfirmacionCancelacion(indice);
+    });
+  });
+}
+
+import { marcarReservasFinalizadas } from "./core/reservas.js";
+
+// ========================================
+// CONFIRMAR CANCELACIÓN (HU-10, HU-11)
+// ========================================
+let indiceCancelacionPendiente = null;
+
+function abrirModalConfirmacionCancelacion(indice) {
+  indiceCancelacionPendiente = indice;
+
+  const reservas = obtenerReservasStorage();
+  const reserva = reservas[indice];
+
+  if (!reserva) return;
+
+  abrirModal(`
+    <h2 id="modalTitle">¿Cancelar reserva?</h2>
+
+    <div class="modal-info">
+      <p><strong>Dueño:</strong> ${reserva.dueno}</p>
+      <p><strong>Mascota:</strong> ${reserva.mascota}</p>
+      <p><strong>Fecha:</strong> ${new Date(reserva.fecha + "T00:00:00").toLocaleDateString("es-AR")}</p>
+      <p><strong>Hora:</strong> ${reserva.hora}</p>
+      <p><strong>Servicio:</strong> ${reserva.servicio}</p>
+      <p><strong>Profesional:</strong> ${reserva.profesional}</p>
+    </div>
+
+    <p class="modal-legal">
+      Esta acción marcará la reserva como <strong>cancelada</strong> y liberará el horario.
+    </p>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-block" data-accion="cancelar-no">No, volver</button>
+      <button class="btn btn-primary btn-block" data-accion="cancelar-si">Sí, cancelar</button>
+    </div>
+  `);
+}
+
+const cuerpoModalCancelacion = document.getElementById("modalBody");
+cuerpoModalCancelacion?.addEventListener("click", (e) => {
+  const noBtn = e.target.closest('[data-accion="cancelar-no"]');
+  if (noBtn) {
+    indiceCancelacionPendiente = null;
+    cerrarModal();
+    return;
+  }
+
+  const siBtn = e.target.closest('[data-accion="cancelar-si"]');
+  if (!siBtn) return;
+
+  if (indiceCancelacionPendiente === null) return;
+
+  cancelarReservaStorage(indiceCancelacionPendiente);
+  indiceCancelacionPendiente = null;
+
+  cerrarModal();
+  renderizarTablaAdmin();
+
+  abrirModal(`
+    <h2 id="modalTitle">Reserva cancelada</h2>
+    <p>El horario quedó liberado.</p>
+    <button class="btn btn-primary btn-block" data-accion="cancelar-ok">Aceptar</button>
+  `);
+});
+
+cuerpoModalCancelacion?.addEventListener("click", (e) => {
+  const okBtn = e.target.closest('[data-accion="cancelar-ok"]');
+  if (!okBtn) return;
+  cerrarModal();
+});
+
+function actualizarReservasFinalizadas() {
+  const reservas = obtenerReservasStorage();
+
+  const { reservasActualizadas, cambio } = marcarReservasFinalizadas(
+    reservas,
+    new Date(),
+  );
+
+  if (cambio) obtenerReservasStorage(reservasActualizadas);
+}
 // =======================
 // PERSISTENCIA LOCAL DE DATOS (HU-12)
 // =======================
