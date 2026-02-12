@@ -1,3 +1,90 @@
+/* NAVBAR (HU-15) */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--white);
+  box-shadow: var(--shadow-xs);
+  height: var(--nav-height);
+}
+
+.nav-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.nav-brand {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--green-700);
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: var(--space-7);
+}
+
+.nav-link {
+  font-weight: 600;
+  color: var(--sage-700);
+  transition: color 0.25s;
+}
+.nav-link:hover,
+.nav-link:focus-visible {
+  color: var(--green-700);
+}
+
+.nav-toggle {
+  display: none;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  margin-left: auto;
+}
+
+.nav-toggle .bar {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  height: 3px;
+  background: var(--green-700);
+  border-radius: 3px;
+  transition: transform 0.25s, opacity 0.25s, top 0.25s;
+}
+.nav-toggle .bar:nth-child(1) { top: 12px; }
+.nav-toggle .bar:nth-child(2) { top: 20px; }
+.nav-toggle .bar:nth-child(3) { top: 28px; }
+
+.nav-toggle.is-open .bar:nth-child(1) {
+  top: 20px;
+  transform: rotate(45deg);
+}
+.nav-toggle.is-open .bar:nth-child(2) {
+  opacity: 0;
+}
+.nav-toggle.is-open .bar:nth-child(3) {
+  top: 20px;
+  transform: rotate(-45deg);
+}
+
+.nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+}
+.nav-backdrop.show {
+  display: block;
+}
+
+
+
 /* SERVICIOS (HU-01, HU-02) */
 .modal {
   display: none;
