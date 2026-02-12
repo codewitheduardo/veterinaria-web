@@ -1,3 +1,179 @@
+// =======================
+// NAVBAR (HU-15)
+// =======================
+import {
+  obtenerMapaVisibilidadSecciones,
+  obtenerMapaVisibilidadInicio,
+  obtenerVisibilidadNavegacion,
+  resolverSeccionDesdeHash,
+} from "./core/nav.js";
+
+const botonToggleNav = document.getElementById("navToggle");
+const menuNav = document.getElementById("navMenu");
+const fondoNav = document.getElementById("navBackdrop");
+const logoNav = document.getElementById("navLogo");
+
+function abrirNav() {
+  if (!menuNav || !botonToggleNav || !fondoNav) return;
+
+  menuNav.classList.add("active");
+  botonToggleNav.classList.add("is-open");
+  botonToggleNav.setAttribute("aria-expanded", "true");
+  fondoNav.classList.add("show");
+  document.body.classList.add("no-scroll");
+
+  const primerLink = menuNav.querySelector(".nav-link");
+  if (primerLink) primerLink.focus();
+}
+
+function cerrarNav() {
+  if (!menuNav || !botonToggleNav || !fondoNav) return;
+
+  menuNav.classList.remove("active");
+  botonToggleNav.classList.remove("is-open");
+  botonToggleNav.setAttribute("aria-expanded", "false");
+  fondoNav.classList.remove("show");
+  document.body.classList.remove("no-scroll");
+}
+
+function conectarMenuNav() {
+  if (!botonToggleNav || !menuNav || !fondoNav) return;
+
+  botonToggleNav.addEventListener("click", () =>
+    menuNav.classList.contains("active") ? cerrarNav() : abrirNav(),
+  );
+
+  fondoNav.addEventListener("click", cerrarNav);
+
+  document.querySelectorAll(".nav-link").forEach((link) =>
+    link.addEventListener("click", () => {
+      cerrarNav();
+    }),
+  );
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && menuNav.classList.contains("active")) cerrarNav();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (!menuNav.classList.contains("active")) return;
+    if (e.key !== "Tab") return;
+
+    const enfocabes = menuNav.querySelectorAll("a, button");
+    const primero = enfocabes[0];
+    const ultimo = enfocabes[enfocabes.length - 1];
+    if (!primero || !ultimo) return;
+
+    if (e.shiftKey && document.activeElement === primero) {
+      e.preventDefault();
+      ultimo.focus();
+    } else if (!e.shiftKey && document.activeElement === ultimo) {
+      e.preventDefault();
+      primero.focus();
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 768) cerrarNav();
+  });
+}
+
+function obtenerIdsSeccionesMain() {
+  return Array.from(document.querySelectorAll("main > section")).map(
+    (seccion) => seccion.id,
+  );
+}
+
+function aplicarVisibilidadSecciones(mapaVisibilidad) {
+  const secciones = document.querySelectorAll("main > section");
+  secciones.forEach((seccion) => {
+    seccion.style.display = mapaVisibilidad[seccion.id] ? "" : "none";
+  });
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function mostrarSoloSeccion(idObjetivo) {
+  const ids = obtenerIdsSeccionesMain();
+  const mapa = obtenerMapaVisibilidadSecciones(ids, idObjetivo);
+  aplicarVisibilidadSecciones(mapa);
+}
+
+function mostrarModoInicio() {
+  const ids = obtenerIdsSeccionesMain();
+  const mapa = obtenerMapaVisibilidadInicio(ids);
+  aplicarVisibilidadSecciones(mapa);
+}
+
+function estaAdminLogueado() {
+  return localStorage.getItem("adminLogged") === "true";
+}
+
+function actualizarNavPorAutenticacion() {
+  const { mostrarEnlaces, mostrarToggle } = obtenerVisibilidadNavegacion(
+    estaAdminLogueadoOk(),
+  );
+
+  const enlaces = document.querySelectorAll(".nav-link");
+
+  enlaces.forEach((a) => (a.style.display = mostrarEnlaces ? "" : "none"));
+
+  if (botonToggleNav)
+    botonToggleNav.style.display = mostrarToggle ? "" : "none";
+
+  if (!mostrarEnlaces) {
+    cerrarNav();
+    if (fondoNav) fondoNav.classList.remove("show");
+  }
+}
+
+function conectarModoSeccionesNav() {
+  const enlaces = document.querySelectorAll('.nav-link[href^="#"]');
+
+  enlaces.forEach((link) => {
+    link.addEventListener("click", () => {
+      const id = link.getAttribute("href").slice(1);
+
+      if (id === "inicio") mostrarModoInicio();
+      else mostrarSoloSeccion(id);
+
+      if (id === "admin" && !estaAdminLogueadoOk()) {
+        refrescarFormularioAdmin();
+      }
+
+      actualizarNavPorAutenticacion();
+    });
+  });
+
+  const objetivo = resolverSeccionDesdeHash(location.hash);
+  if (objetivo === "inicio") mostrarModoInicio();
+  else mostrarSoloSeccion(objetivo);
+
+  actualizarNavPorAutenticacion();
+}
+
+function conectarLogoInicio() {
+  if (!logoNav) return;
+
+  logoNav.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    if (estaAdminLogueadoOk()) {
+      mostrarSoloSeccion("admin");
+      renderizarTablaAdmin();
+      cerrarNav();
+      history.replaceState(null, "", "#admin");
+      return;
+    }
+
+    mostrarModoInicio();
+    actualizarNavPorAutenticacion();
+    cerrarNav();
+    history.replaceState(null, "", "#inicio");
+  });
+}
+
+
 // ========================================
 // SERVICIOS (HU-01, HU-02)
 // ========================================
