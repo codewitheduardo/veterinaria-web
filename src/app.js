@@ -173,7 +173,6 @@ function conectarLogoInicio() {
   });
 }
 
-
 // ========================================
 // SERVICIOS (HU-01, HU-02)
 // ========================================
@@ -425,6 +424,7 @@ if (carruselServicios) {
     carruselServicios.scrollLeft = scrollInicial - desplazamiento;
   });
 }
+
 // ========================================
 // EQUIPO (HU-03)
 // ========================================
@@ -468,9 +468,9 @@ function renderizarEquipo() {
 }
 
 // =======================
-// RESERVAS (HU-04, HU-05, HU-06, HU-07)
+// TURNOS (HU-04, HU-05, HU-06, HU-07)
 // =======================
-import { esDomingo } from "./core/tiempo.js";
+import { esDomingo } from "./core/tiempos.js";
 
 import {
   obtenerHorariosDisponiblesPorProfesional,
@@ -544,12 +544,16 @@ selectServicio.addEventListener("change", () => {
       .join("");
 });
 
+// =======================
+// Cambia profesional
+// =======================
 selectProfesional.addEventListener("change", () => {
   mostrarErrorCampo(
     "professional",
     validacionesCampos.professional(selectProfesional.value),
   );
 
+  // reset fecha y hora al cambiar profesional
   inputFecha.value = "";
   mostrarErrorCampo("date", "");
   inputFecha.disabled = !selectProfesional.value;
@@ -559,6 +563,9 @@ selectProfesional.addEventListener("change", () => {
   selectHora.innerHTML = '<option value="">Elegí fecha y profesional</option>';
 });
 
+// =======================
+// Cambia fecha
+// =======================
 inputFecha.addEventListener("change", () => {
   mostrarErrorCampo("date", validacionesCampos.date(inputFecha.value));
 
@@ -599,6 +606,9 @@ inputFecha.addEventListener("change", () => {
     horariosDisponibles.map((h) => `<option value="${h}">${h}</option>`).join("");
 });
 
+// =======================
+// Submit
+// =======================
 formularioReserva.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -742,6 +752,7 @@ mostrarModoInicio = function () {
     resetearFormularioReserva();
   }
 };
+
 // ========================================
 // ADMIN (HU-08)
 // ========================================
@@ -992,6 +1003,7 @@ function actualizarReservasFinalizadas() {
 
   if (cambio) obtenerReservasStorage(reservasActualizadas);
 }
+
 // =======================
 // PERSISTENCIA LOCAL DE DATOS (HU-12)
 // =======================
@@ -1024,3 +1036,26 @@ function cancelarReservaStorage(index) {
     guardarReservasStorage(reservas);
   }
 }
+
+// =======================
+// INIT
+// =======================
+function init() {
+  conectarMenuNav();
+  conectarModoSeccionesNav();
+  conectarLogoInicio();
+
+  renderizarServicios();
+
+  renderizarEquipo();
+
+  alternarUIAdmin();
+
+  if (estaAdminLogueadoOk()) {
+    mostrarSoloSeccion("admin");
+  } else {
+    mostrarModoInicio();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", init);

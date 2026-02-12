@@ -1,15 +1,18 @@
+// "HH:mm" → minutos totales
 export function convertirHoraAMinutos(horaTexto) {
   if (!horaTexto || !horaTexto.includes(":")) return 0;
   const [horas, minutos] = horaTexto.split(":").map(Number);
   return horas * 60 + minutos;
 }
 
+// minutos → "HH:mm"
 export function formatearMinutosAHora(minutosTotales) {
   const horas = Math.floor(minutosTotales / 60);
   const minutos = minutosTotales % 60;
   return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
 }
 
+// "YYYY-MM-DD" → Date local (sin UTC)
 export function convertirAFechaLocal(fechaIso) {
   if (fechaIso instanceof Date) {
     return new Date(
