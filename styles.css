@@ -506,3 +506,216 @@ body.kbd-focus .team-card:focus-within .team-card-overlay-content {
     min-height: 320px;
   }
 }
+
+
+
+
+/* PANTALLA DE INICIO */
+.hero-pill {
+  align-self: flex-start;
+  padding: 0.55rem 1.1rem;
+  background: var(--mint-200);
+  color: var(--green-700);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 999px;
+  box-shadow: var(--shadow-xs);
+}
+.hero-title {
+  font-size: clamp(2.2rem, 3.6vw, 3.2rem);
+  line-height: 1.1;
+  font-weight: 800;
+  color: var(--sage-800);
+}
+.hero-title .highlight {
+  color: var(--green-700);
+}
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--grey-600);
+}
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.btn {
+  padding: 0.9rem 1.3rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: all 0.25s;
+  display: inline-block;
+  text-align: center;
+  box-shadow: var(--shadow-xs);
+}
+.btn:focus-visible {
+  outline: 3px solid rgba(104, 191, 162, 0.3);
+  outline-offset: 2px;
+}
+.btn-primary {
+  background: var(--green-700);
+  color: var(--white);
+}
+.btn-primary:hover {
+  background: var(--green-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.btn-secondary {
+  border: 2px solid var(--green-700);
+  color: var(--green-700);
+  background: transparent;
+}
+.btn-secondary:hover {
+  background: var(--mint-200);
+}
+.btn-block {
+  width: 100%;
+}
+
+.hero--banner {
+  padding-block: 0;
+}
+.hero--banner .hero-banner {
+  position: relative;
+  display: grid;
+  align-items: center;
+
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(47, 78, 67, 0.18) 0%,
+      rgba(47, 78, 67, 0.32) 45%,
+      rgba(47, 78, 67, 0.58) 100%
+    ),
+    radial-gradient(
+      1100px 480px at 38% 62%,
+      rgba(0, 0, 0, 0.35) 0%,
+      transparent 65%
+    ),
+    var(
+      --hero-img,
+      url("https://images.unsplash.com/photo-1559294143-ccd4e5078f30?q=80&w=1600&auto=format&fit=crop")
+    );
+
+  background-size: cover;
+  background-position: center 45%;
+  background-repeat: no-repeat;
+  min-height: clamp(460px, calc(86vh - var(--nav-height)), 780px);
+}
+
+@media (min-width: 769px) {
+  .hero--banner .hero-banner {
+    min-height: clamp(620px, calc(92vh - var(--nav-height)), 980px);
+  }
+  @supports (height: 100dvh) {
+    .hero--banner .hero-banner {
+      min-height: clamp(620px, calc(92dvh - var(--nav-height)), 980px);
+    }
+  }
+}
+
+.hero--banner .container {
+  width: min(1400px, 100%);
+  padding-inline: clamp(var(--space-4), 5vw, var(--space-7));
+}
+
+.hero--banner .hero-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-bottom: 0;
+  padding-block: clamp(1.6rem, 5vw, 3rem);
+  color: var(--white);
+}
+
+.hero--banner .hero-title {
+  color: var(--white);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.18);
+}
+.hero--banner .hero-title .highlight {
+  color: var(--mint-300);
+}
+.hero--banner .hero-subtitle {
+  color: #eef7f3;
+  max-width: 60ch;
+}
+
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+.hero-ctas .btn-icon {
+  display: none;
+}
+
+.hero-cta-primary {
+  background: var(--green-700);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 0.9rem 1.2rem;
+  font-size: 1rem;
+  box-shadow: var(--shadow-xs);
+}
+.hero-cta-primary:hover {
+  background: var(--green-600);
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-cta-secondary {
+  background: transparent;
+  color: #fff;
+  border: 1.6px solid rgba(255, 255, 255, 0.28);
+  padding: 0.88rem 1.15rem;
+  font-weight: 700;
+}
+.hero-cta-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hero-metrics {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+}
+.metric-card {
+  padding: 0rem 0.5rem;
+  min-width: 160px;
+  gap: 0.2rem;
+}
+.metric-card strong {
+  font-size: 1.9rem;
+  color: var(--green-600);
+  padding-right: 3px;
+}
+.metric-card span {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.hero-divider {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  filter: drop-shadow(0 -2px 10px rgba(47, 78, 67, 0.06));
+  pointer-events: none;
+}
+.hero-divider svg {
+  width: 100%;
+  height: clamp(44px, 7vw, 72px);
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta-primary,
+  .hero-cta-secondary {
+    transition: none;
+  }
+}
