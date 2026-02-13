@@ -1,7 +1,7 @@
 // =======================
 // NAVBAR (HU-15)
 // =======================
-export function obtenerMapaVisibilidadSecciones(idsSecciones, idObjetivo) {
+function obtenerMapaVisibilidadSecciones(idsSecciones, idObjetivo) {
   const mapa = {};
   idsSecciones.forEach((id) => {
     mapa[id] = id === idObjetivo;
@@ -9,7 +9,7 @@ export function obtenerMapaVisibilidadSecciones(idsSecciones, idObjetivo) {
   return mapa;
 }
 
-export function obtenerMapaVisibilidadInicio(idsSecciones) {
+function obtenerMapaVisibilidadInicio(idsSecciones) {
   const mapa = {};
   idsSecciones.forEach((id) => {
     mapa[id] = id !== "admin";
@@ -17,14 +17,14 @@ export function obtenerMapaVisibilidadInicio(idsSecciones) {
   return mapa;
 }
 
-export function obtenerVisibilidadNavegacion(esAdministrador) {
+function obtenerVisibilidadNavegacion(esAdministrador) {
   return {
     mostrarEnlaces: !esAdministrador,
     mostrarToggle: !esAdministrador,
   };
 }
 
-export function resolverSeccionDesdeHash(hash) {
+function resolverSeccionDesdeHash(hash) {
   if (!hash) return "inicio";
 
   if (hash.startsWith("#")) {
@@ -33,3 +33,13 @@ export function resolverSeccionDesdeHash(hash) {
   }
   return hash;
 }
+
+if (typeof module !== "undefined") {
+  module.exports = {
+    obtenerMapaVisibilidadSecciones,
+    obtenerMapaVisibilidadInicio,
+    obtenerVisibilidadNavegacion,
+    resolverSeccionDesdeHash,
+  };
+}
+

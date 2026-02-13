@@ -1,19 +1,19 @@
 // "HH:mm" → minutos totales
-export function convertirHoraAMinutos(horaTexto) {
+function convertirHoraAMinutos(horaTexto) {
   if (!horaTexto || !horaTexto.includes(":")) return 0;
   const [horas, minutos] = horaTexto.split(":").map(Number);
   return horas * 60 + minutos;
 }
 
 // minutos → "HH:mm"
-export function formatearMinutosAHora(minutosTotales) {
+function formatearMinutosAHora(minutosTotales) {
   const horas = Math.floor(minutosTotales / 60);
   const minutos = minutosTotales % 60;
   return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
 }
 
 // "YYYY-MM-DD" → Date local (sin UTC)
-export function convertirAFechaLocal(fechaIso) {
+function convertirAFechaLocal(fechaIso) {
   if (fechaIso instanceof Date) {
     return new Date(
       fechaIso.getFullYear(),
@@ -25,25 +25,25 @@ export function convertirAFechaLocal(fechaIso) {
   return new Date(anio, mes - 1, dia);
 }
 
-export function esDomingo(fecha) {
+function esDomingo(fecha) {
   return convertirAFechaLocal(fecha).getDay() === 0;
 }
 
-export function esSabado(fecha) {
+function esSabado(fecha) {
   return convertirAFechaLocal(fecha).getDay() === 6;
 }
 
-export function obtenerInicioAtencionMinutos() {
+function obtenerInicioAtencionMinutos() {
   return convertirHoraAMinutos("09:00");
 }
 
-export function obtenerFinAtencionMinutos(fecha) {
+function obtenerFinAtencionMinutos(fecha) {
   return esSabado(fecha)
     ? convertirHoraAMinutos("12:00")
     : convertirHoraAMinutos("18:00");
 }
 
-export function generarHorariosDisponibles(fecha, duracionMinutos = 30) {
+function generarHorariosDisponibles(fecha, duracionMinutos = 30) {
   const horarios = [];
   if (esDomingo(fecha)) return horarios;
 
@@ -57,4 +57,17 @@ export function generarHorariosDisponibles(fecha, duracionMinutos = 30) {
   }
 
   return horarios;
+}
+
+if (typeof module !== "undefined") {
+  module.exports = {
+    convertirHoraAMinutos,
+    formatearMinutosAHora,
+    convertirAFechaLocal,
+    esDomingo,
+    esSabado,
+    obtenerInicioAtencionMinutos,
+    obtenerFinAtencionMinutos,
+    generarHorariosDisponibles,
+  };
 }

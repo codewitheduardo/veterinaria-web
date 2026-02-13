@@ -278,99 +278,135 @@ h6,
 }
 
 /* SERVICIOS (HU-01, HU-02) */
+/* ================= MODAL BASE ================= */
+
 .modal {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 9999;
 }
+
 .modal.active {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }
+
 .modal-overlay {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(3px);
 }
+
 .modal-content {
   position: relative;
   background: var(--white);
-  max-width: 640px;
-  margin: 4% auto;
+
+  width: min(640px, 95%);
+  padding: clamp(1.2rem, 3vw, var(--space-8));
+
   border-radius: var(--radius-xl);
-  padding: var(--space-8);
   box-shadow: var(--shadow-lg);
+
   animation: modalSlideIn 0.25s ease-out;
 }
+
+/* ================= ANIMACIÓN ================= */
+
 @keyframes modalSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-40px);
+    transform: translateY(-30px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
+/* ================= BOTÓN CERRAR ================= */
+
 .modal-close {
   position: absolute;
   top: 0.9rem;
   right: 0.9rem;
+
   width: 40px;
   height: 40px;
   border-radius: 50%;
   background: var(--mint-200);
   color: var(--green-700);
   font-size: 1.6rem;
+
   display: grid;
   place-items: center;
+
   transition: all 0.25s;
   box-shadow: var(--shadow-xs);
 }
+
 .modal-close:hover {
   background: var(--green-700);
   color: var(--white);
   transform: rotate(90deg);
 }
+
+/* ================= CONTENIDO ================= */
+
 #modalBody h2 {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 3.5vw, 1.5rem);
   color: var(--sage-800);
   margin-bottom: 0.6rem;
 }
+
 #modalBody p {
   color: var(--grey-600);
-  line-height: 1.8;
+  line-height: 1.6;
   margin-bottom: 0.4rem;
+  font-size: clamp(0.9rem, 2.8vw, 1rem);
 }
+
 #modalBody .modal-price {
-  font-size: 1.45rem;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
   font-weight: 800;
   color: var(--green-700);
   margin-top: 0.7rem;
 }
+
 #modalBody .modal-info {
   background: var(--mint-100);
   border: 1px solid var(--mint-200);
-  padding: var(--space-6);
+  padding: clamp(0.9rem, 2.5vw, var(--space-6));
   border-radius: var(--radius-md);
   margin-top: 0.9rem;
-  line-height: 1.7;
 }
+
 #modalBody .modal-info strong {
   color: var(--green-700);
 }
+
 #modalBody .btn {
   margin-top: var(--space-6);
+  width: 100%;
 }
 
 #modalBody .modal-legal {
-  color: var(--grey-600);
-  font-size: 0.8rem;
-  line-height: 1.6;
+  font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+  line-height: 1.5;
   margin-top: 0.9rem;
-  margin-inline: 10px;
+  color: var(--grey-600);
 }
+
+#modalBody .modal-note {
+  margin-top: 0.6rem;
+  font-size: 0.92rem;
+  opacity: 0.85;
+}
+
+
 
 .services-section {
   background: var(--white);

@@ -1,13 +1,6 @@
 // =======================
 // NAVBAR (HU-15)
 // =======================
-import {
-  obtenerMapaVisibilidadSecciones,
-  obtenerMapaVisibilidadInicio,
-  obtenerVisibilidadNavegacion,
-  resolverSeccionDesdeHash,
-} from "./core/nav.js";
-
 const botonToggleNav = document.getElementById("navToggle");
 const menuNav = document.getElementById("navMenu");
 const fondoNav = document.getElementById("navBackdrop");
@@ -105,17 +98,12 @@ function mostrarModoInicio() {
   aplicarVisibilidadSecciones(mapa);
 }
 
-function estaAdminLogueado() {
-  return localStorage.getItem("adminLogged") === "true";
-}
-
 function actualizarNavPorAutenticacion() {
   const { mostrarEnlaces, mostrarToggle } = obtenerVisibilidadNavegacion(
     estaAdminLogueadoOk(),
   );
 
   const enlaces = document.querySelectorAll(".nav-link");
-
   enlaces.forEach((a) => (a.style.display = mostrarEnlaces ? "" : "none"));
 
   if (botonToggleNav)
@@ -176,13 +164,6 @@ function conectarLogoInicio() {
 // ========================================
 // SERVICIOS (HU-01, HU-02)
 // ========================================
-import {
-  servicios,
-  obtenerServicioPorId,
-  formatearPrecio,
-  claseCategoria,
-} from "./core/servicios.js";
-
 const contenedorModal = document.getElementById("modal");
 const overlayModal = document.getElementById("modalOverlay");
 const botonCerrarModal = document.getElementById("modalClose");
@@ -206,6 +187,7 @@ function cerrarModal() {
 }
 
 botonCerrarModal?.addEventListener("click", cerrarModal);
+
 overlayModal?.addEventListener("click", (e) => {
   if (e.target === overlayModal) {
     cerrarModal();
@@ -235,7 +217,6 @@ cuerpoModal?.addEventListener("click", (e) => {
   }
 
   history.replaceState(null, "", "#reservar");
-
   cerrarModal();
 });
 
@@ -300,22 +281,34 @@ function renderizarServicios() {
     const abrirDetalles = () => {
       servicioSeleccionadoDesdeModal = servicio.id;
 
+      const duracion = obtenerDuracionServicioMinutos(servicio);
+
       abrirModal(`
-        <h2>${servicio.titulo}</h2>
-        <span class="service-badge ${claseCategoria(servicio.categoria)}">
-          ${servicio.categoria}
-        </span>
-        <p>${servicio.descripcion}</p>
-        <div class="modal-price">${formatearPrecio(servicio.precio)}</div>
+    <h2>${servicio.titulo}</h2>
 
-        <div class="modal-info">
-          <p><strong>Recordatorio:</strong> la duración del turno es de 30 minutos.</p>
-        </div>
+    <span class="service-badge ${claseCategoria(servicio.categoria)}">
+      ${servicio.categoria}
+    </span>
 
-        <a href="#reservar" class="btn btn-primary btn-block" data-accion="reservar">
-          Reservar este servicio
-        </a>
-      `);
+    <p>${servicio.descripcion}</p>
+
+    <div class="modal-price">
+      ${formatearPrecio(servicio.precio)}
+    </div>
+
+    <div class="modal-info">
+  <p>
+    <strong>Duración del turno:</strong>
+    ${duracion === 60 ? "1 hora" : "30 minutos"}.
+  </p>
+  <p class="modal-note">
+    La puntualidad es fundamental para garantizar una atención organizada y sin demoras.
+  </p>
+</div>
+    <a href="#reservar" class="btn btn-primary btn-block" data-accion="reservar">
+      Reservar este servicio
+    </a>
+  `);
     };
 
     tarjeta.addEventListener("click", (e) => {
@@ -428,8 +421,6 @@ if (carruselServicios) {
 // ========================================
 // EQUIPO (HU-03)
 // ========================================
-import { profesionales } from "./core/profesionales.js";
-
 const teamGrid = document.getElementById("teamGrid");
 
 function renderizarEquipo() {
@@ -470,20 +461,6 @@ function renderizarEquipo() {
 // =======================
 // TURNOS (HU-04, HU-05, HU-06, HU-07)
 // =======================
-import { esDomingo } from "./core/tiempos.js";
-
-import {
-  obtenerHorariosDisponiblesPorProfesional,
-  estaHorarioOcupado,
-} from "./core/reservas.js";
-
-import {
-  obtenerProfesionalPorId,
-  obtenerProfesionalesPorServicio,
-} from "./core/profesionales.js";
-
-import { obtenerDuracionServicioMinutos } from "./core/servicios.js";
-
 const formularioReserva = document.getElementById("bookingForm");
 const selectServicio = document.getElementById("service");
 const selectProfesional = document.getElementById("professional");
@@ -492,7 +469,8 @@ const selectHora = document.getElementById("time");
 
 const validacionesCampos = {
   ownerName: (v) => (v.trim().length >= 2 ? "" : "Ingresá tu nombre."),
-  petName: (v) => (v.trim().length >= 2 ? "" : "Ingresá el nombre de tu mascota."),
+  petName: (v) =>
+    v.trim().length >= 2 ? "" : "Ingresá el nombre de tu mascota.",
   phone: (v) =>
     /\d{7,}/.test(v.replace(/\D/g, "")) ? "" : "Ingresá un teléfono válido.",
   service: (v) => (v ? "" : "Seleccioná un servicio."),
@@ -523,7 +501,8 @@ selectServicio.addEventListener("change", () => {
 
   selectProfesional.value = "";
   selectProfesional.disabled = true;
-  selectProfesional.innerHTML = '<option value="">Primero elegí un servicio</option>';
+  selectProfesional.innerHTML =
+    '<option value="">Primero elegí un servicio</option>';
 
   inputFecha.value = "";
   inputFecha.disabled = true;
@@ -544,16 +523,12 @@ selectServicio.addEventListener("change", () => {
       .join("");
 });
 
-// =======================
-// Cambia profesional
-// =======================
 selectProfesional.addEventListener("change", () => {
   mostrarErrorCampo(
     "professional",
     validacionesCampos.professional(selectProfesional.value),
   );
 
-  // reset fecha y hora al cambiar profesional
   inputFecha.value = "";
   mostrarErrorCampo("date", "");
   inputFecha.disabled = !selectProfesional.value;
@@ -563,9 +538,6 @@ selectProfesional.addEventListener("change", () => {
   selectHora.innerHTML = '<option value="">Elegí fecha y profesional</option>';
 });
 
-// =======================
-// Cambia fecha
-// =======================
 inputFecha.addEventListener("change", () => {
   mostrarErrorCampo("date", validacionesCampos.date(inputFecha.value));
 
@@ -596,19 +568,19 @@ inputFecha.addEventListener("change", () => {
 
   if (horariosDisponibles.length === 0) {
     selectHora.disabled = true;
-    selectHora.innerHTML = '<option value="">No hay horarios disponibles</option>';
+    selectHora.innerHTML =
+      '<option value="">No hay horarios disponibles</option>';
     return;
   }
 
   selectHora.disabled = false;
   selectHora.innerHTML =
     '<option value="">Seleccioná un horario</option>' +
-    horariosDisponibles.map((h) => `<option value="${h}">${h}</option>`).join("");
+    horariosDisponibles
+      .map((h) => `<option value="${h}">${h}</option>`)
+      .join("");
 });
 
-// =======================
-// Submit
-// =======================
 formularioReserva.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -631,7 +603,9 @@ formularioReserva.addEventListener("submit", (e) => {
     time: validacionesCampos.time(hora),
   };
 
-  Object.entries(errores).forEach(([campo, msg]) => mostrarErrorCampo(campo, msg));
+  Object.entries(errores).forEach(([campo, msg]) =>
+    mostrarErrorCampo(campo, msg),
+  );
   if (Object.values(errores).some(Boolean)) return;
 
   const servicio = obtenerServicioPorId(idServicio);
@@ -675,23 +649,45 @@ formularioReserva.addEventListener("submit", (e) => {
   agregarReservaStorage(reserva);
 
   abrirModal(`
-    <h2>✅ Reserva Confirmada</h2>
-    <div class="modal-info">
-      <p><strong>Dueño:</strong> ${reserva.dueno}</p>
-      <p><strong>Mascota:</strong> ${reserva.mascota}</p>
-      <p><strong>Servicio:</strong> ${reserva.servicio}</p>
-      <p><strong>Profesional:</strong> ${reserva.profesional}</p>
-      <p><strong>Fecha:</strong> ${fecha}</p>
-      <p><strong>Hora:</strong> ${hora}</p>
-      <p><strong>Duración:</strong> ${duracionMinutos} min</p>
-    </div>
-    <a href="#reservar" class="btn btn-primary btn-block" data-accion="cerrar-modal">Aceptar</a>
-  `);
+  <h2 id="modalTitle">✅ Reserva Confirmada</h2>
+
+  <div class="modal-info">
+    <p><strong>Dueño:</strong> ${reserva.dueno}</p>
+    <p><strong>Mascota:</strong> ${reserva.mascota}</p>
+    <p><strong>Teléfono:</strong> ${reserva.telefono}</p>
+    <p><strong>Servicio:</strong> ${reserva.servicio}</p>
+    <p><strong>Profesional:</strong> ${reserva.profesional}</p>
+
+    <p><strong>Fecha:</strong> ${new Date(
+      fecha + "T00:00:00",
+    ).toLocaleDateString("es-AR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })}</p>
+
+    <p><strong>Hora:</strong> ${hora}</p>
+  </div>
+
+  <p class="modal-info">
+    <strong>Aviso de puntualidad:</strong> si llegás tarde y el profesional ya atiende el siguiente turno,
+    el turno se pierde y deberás reprogramarlo.
+  </p>
+
+  <p class="modal-legal">
+    Tu información no se comparte con terceros, no se usa con fines comerciales y se maneja de forma interna,
+    respetando la Ley de Protección de Datos Personales (Ley N.º 18.331).
+  </p>
+
+  <a href="#reservar" class="btn btn-primary btn-block" data-accion="cerrar-modal">Aceptar</a>
+`);
 
   formularioReserva.reset();
 
   selectProfesional.disabled = true;
-  selectProfesional.innerHTML = '<option value="">Primero elegí un servicio</option>';
+  selectProfesional.innerHTML =
+    '<option value="">Primero elegí un servicio</option>';
 
   inputFecha.disabled = true;
 
@@ -727,13 +723,15 @@ function resetearFormularioReserva() {
   if (selectHora) {
     selectHora.value = "";
     selectHora.disabled = true;
-    selectHora.innerHTML = '<option value="">Elegí fecha y profesional</option>';
+    selectHora.innerHTML =
+      '<option value="">Elegí fecha y profesional</option>';
   }
 }
 
 const _mostrarSoloSeccionOriginal = mostrarSoloSeccion;
 mostrarSoloSeccion = function (idObjetivo) {
-  const estabaEnReservar = resolverSeccionDesdeHash(location.hash) === "reservar";
+  const estabaEnReservar =
+    resolverSeccionDesdeHash(location.hash) === "reservar";
 
   _mostrarSoloSeccionOriginal(idObjetivo);
 
@@ -744,7 +742,8 @@ mostrarSoloSeccion = function (idObjetivo) {
 
 const _mostrarModoInicioOriginal = mostrarModoInicio;
 mostrarModoInicio = function () {
-  const estabaEnReservar = resolverSeccionDesdeHash(location.hash) === "reservar";
+  const estabaEnReservar =
+    resolverSeccionDesdeHash(location.hash) === "reservar";
 
   _mostrarModoInicioOriginal();
 
@@ -756,14 +755,6 @@ mostrarModoInicio = function () {
 // ========================================
 // ADMIN (HU-08)
 // ========================================
-import {
-  validarCredencialesAdmin,
-  obtenerFechaHoyISO,
-  obtenerClaveSesionAdmin,
-  estaAdminLogueadoDesdeValor,
-  valorSesionAdminLogueado,
-} from "./core/admin.js";
-
 const tarjetaLoginAdmin = document.getElementById("adminLoginCard");
 const formularioLoginAdmin = document.getElementById("adminLoginForm");
 const panelAdmin = document.getElementById("adminPanel");
@@ -875,8 +866,6 @@ function refrescarFormularioAdmin() {
 // ========================================
 // ADMIN (HU-09)
 // ========================================
-import { obtenerReservasParaAdmin } from "./core/admin.js";
-
 const cuerpoTablaAdmin = document.getElementById("adminTableBody");
 
 function renderizarTablaAdmin() {
@@ -922,8 +911,6 @@ function renderizarTablaAdmin() {
   });
 }
 
-import { marcarReservasFinalizadas } from "./core/reservas.js";
-
 // ========================================
 // CONFIRMAR CANCELACIÓN (HU-10, HU-11)
 // ========================================
@@ -960,8 +947,7 @@ function abrirModalConfirmacionCancelacion(indice) {
   `);
 }
 
-const cuerpoModalCancelacion = document.getElementById("modalBody");
-cuerpoModalCancelacion?.addEventListener("click", (e) => {
+cuerpoModal?.addEventListener("click", (e) => {
   const noBtn = e.target.closest('[data-accion="cancelar-no"]');
   if (noBtn) {
     indiceCancelacionPendiente = null;
@@ -987,7 +973,7 @@ cuerpoModalCancelacion?.addEventListener("click", (e) => {
   `);
 });
 
-cuerpoModalCancelacion?.addEventListener("click", (e) => {
+cuerpoModal?.addEventListener("click", (e) => {
   const okBtn = e.target.closest('[data-accion="cancelar-ok"]');
   if (!okBtn) return;
   cerrarModal();
@@ -1001,7 +987,7 @@ function actualizarReservasFinalizadas() {
     new Date(),
   );
 
-  if (cambio) obtenerReservasStorage(reservasActualizadas);
+  if (cambio) guardarReservasStorage(reservasActualizadas);
 }
 
 // =======================
@@ -1046,7 +1032,6 @@ function init() {
   conectarLogoInicio();
 
   renderizarServicios();
-
   renderizarEquipo();
 
   alternarUIAdmin();

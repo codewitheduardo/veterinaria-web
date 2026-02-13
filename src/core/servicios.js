@@ -1,8 +1,9 @@
-export const servicios = [
+const servicios = [
   {
     id: 1,
     titulo: "Consulta Médica",
-    descripcion: "Evaluación completa del estado de salud de tu mascota con diagnóstico profesional.",
+    descripcion:
+      "Evaluación completa del estado de salud de tu mascota con diagnóstico profesional.",
     precio: 500,
     categoria: "MEDICAL",
     img: "../img/servicios/consulta.jpg",
@@ -10,7 +11,8 @@ export const servicios = [
   {
     id: 2,
     titulo: "Vacunación",
-    descripcion: "Plan completo de vacunación según calendario y edad de tu mascota.",
+    descripcion:
+      "Plan completo de vacunación según calendario y edad de tu mascota.",
     precio: 1200,
     categoria: "MEDICAL",
     img: "../img/servicios/vacunacion.jpg",
@@ -34,7 +36,8 @@ export const servicios = [
   {
     id: 5,
     titulo: "Cirugía",
-    descripcion: "Intervenciones quirúrgicas con tecnología de punta y cuidados post-operatorios.",
+    descripcion:
+      "Intervenciones quirúrgicas con tecnología de punta y cuidados post-operatorios.",
     precio: 8500,
     categoria: "MEDICAL",
     img: "../img/servicios/cirugia.jpg",
@@ -49,21 +52,30 @@ export const servicios = [
   },
 ];
 
-export function obtenerServicioPorId(id) {
+function obtenerServicioPorId(id) {
   const identificador = Number(id);
   return servicios.find((servicio) => servicio.id === identificador) || null;
 }
 
-export function formatearPrecio(precio) {
+function formatearPrecio(precio) {
   return `$${Number(precio).toLocaleString("es-AR")}`;
 }
 
-export function claseCategoria(categoria) {
+function claseCategoria(categoria) {
   return String(categoria || "").toLowerCase();
 }
 
-export function obtenerDuracionServicioMinutos(servicio) {
+function obtenerDuracionServicioMinutos(servicio) {
   const categoria = String(servicio?.categoria || "").toUpperCase();
   return categoria === "AESTHETIC" ? 60 : 30;
 }
 
+if (typeof module !== "undefined") {
+  module.exports = {
+    servicios,
+    obtenerServicioPorId,
+    formatearPrecio,
+    claseCategoria,
+    obtenerDuracionServicioMinutos,
+  };
+}

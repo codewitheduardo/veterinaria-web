@@ -1,7 +1,7 @@
 // =======================
 // EQUIPO (HU-03)
 // =======================
-export const profesionales = [
+const profesionales = [
   {
     id: 1,
     nombre: "Dra. María González",
@@ -62,12 +62,20 @@ export const profesionales = [
   },
 ];
 
-export function obtenerProfesionalPorId(id) {
+function obtenerProfesionalPorId(id) {
   const identificador = Number(id);
   return profesionales.find((p) => p.id === identificador) || null;
 }
 
-export function obtenerProfesionalesPorServicio(idServicio) {
+function obtenerProfesionalesPorServicio(idServicio) {
   const id = Number(idServicio);
   return profesionales.filter((p) => p.servicios.includes(id));
+}
+
+if (typeof module !== "undefined") {
+  module.exports = {
+    profesionales,
+    obtenerProfesionalPorId,
+    obtenerProfesionalesPorServicio,
+  };
 }

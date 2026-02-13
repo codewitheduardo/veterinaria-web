@@ -1,14 +1,8 @@
-import {
-  generarHorariosDisponibles,
-  convertirHoraAMinutos,
-  obtenerFinAtencionMinutos,
-} from "./tiempos.js";
-
 function seSolapan(aInicio, aFin, bInicio, bFin) {
   return aInicio < bFin && aFin > bInicio;
 }
 
-export function obtenerReservasOcupadas(idProfesional, fecha, obtenerReservas) {
+function obtenerReservasOcupadas(idProfesional, fecha, obtenerReservas) {
   return obtenerReservas().filter(
     (reserva) =>
       Number(reserva.profesionalId) === Number(idProfesional) &&
@@ -17,7 +11,7 @@ export function obtenerReservasOcupadas(idProfesional, fecha, obtenerReservas) {
   );
 }
 
-export function obtenerHorariosDisponiblesPorProfesional(
+function obtenerHorariosDisponiblesPorProfesional(
   idProfesional,
   fecha,
   obtenerReservas,
@@ -48,7 +42,7 @@ export function obtenerHorariosDisponiblesPorProfesional(
   });
 }
 
-export function estaHorarioOcupado(
+function estaHorarioOcupado(
   idProfesional,
   fecha,
   horaInicio,
@@ -73,7 +67,7 @@ export function estaHorarioOcupado(
   });
 }
 
-export function marcarReservasFinalizadas(reservas, ahora = new Date()) {
+function marcarReservasFinalizadas(reservas, ahora = new Date()) {
   let cambio = false;
 
   const copia = (reservas || []).map((r) => ({ ...r }));
@@ -92,4 +86,13 @@ export function marcarReservasFinalizadas(reservas, ahora = new Date()) {
   });
 
   return { reservasActualizadas: copia, cambio };
+}
+
+if (typeof module !== "undefined") {
+  module.exports = {
+    obtenerReservasOcupadas,
+    obtenerHorariosDisponiblesPorProfesional,
+    estaHorarioOcupado,
+    marcarReservasFinalizadas,
+  };
 }
