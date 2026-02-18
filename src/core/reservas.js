@@ -16,6 +16,7 @@ function obtenerHorariosDisponiblesPorProfesional(
   fecha,
   obtenerReservas,
   duracionMinutos = 30,
+  ahora = new Date(),
 ) {
   const todos = generarHorariosDisponibles(fecha, duracionMinutos);
   const reservasOcupadas = obtenerReservasOcupadas(
@@ -26,11 +27,18 @@ function obtenerHorariosDisponiblesPorProfesional(
 
   const finAtencion = obtenerFinAtencionMinutos(fecha);
 
+  // Si la fecha elegida es hoy, no permitir horarios que ya pasaron.
+  const esHoy =
+    convertirAFechaLocal(fecha).getTime() === convertirAFechaLocal(ahora).getTime();
+  const minutosAhora = ahora.getHours() * 60 + ahora.getMinutes();
+
   return todos.filter((horaInicio) => {
     const inicioNuevo = convertirHoraAMinutos(horaInicio);
     const finNuevo = inicioNuevo + Number(duracionMinutos || 30);
 
     if (finNuevo > finAtencion) return false;
+
+    if (esHoy && inicioNuevo <= minutosAhora) return false;
 
     return !reservasOcupadas.some((r) => {
       const inicioExistente = convertirHoraAMinutos(r.hora);

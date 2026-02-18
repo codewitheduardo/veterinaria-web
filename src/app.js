@@ -467,6 +467,27 @@ const selectProfesional = document.getElementById("professional");
 const inputFecha = document.getElementById("date");
 const selectHora = document.getElementById("time");
 
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+
+function obtenerFechaHoyISOLocal(ahora = new Date()) {
+  return `${ahora.getFullYear()}-${pad2(ahora.getMonth() + 1)}-${pad2(ahora.getDate())}`;
+}
+
+function esFechaAnteriorAHoy(fechaISO, ahora = new Date()) {
+  if (!fechaISO) return false;
+  return convertirAFechaLocal(fechaISO) < convertirAFechaLocal(ahora);
+}
+
+function esMismaFechaQueHoy(fechaISO, ahora = new Date()) {
+  if (!fechaISO) return false;
+  return (
+    convertirAFechaLocal(fechaISO).getTime() ===
+    convertirAFechaLocal(ahora).getTime()
+  );
+}
+
 const validacionesCampos = {
   ownerName: (v) => (v.trim().length >= 2 ? "" : "Ingresá tu nombre."),
   petName: (v) =>
@@ -475,7 +496,11 @@ const validacionesCampos = {
     /\d{7,}/.test(v.replace(/\D/g, "")) ? "" : "Ingresá un teléfono válido.",
   service: (v) => (v ? "" : "Seleccioná un servicio."),
   professional: (v) => (v ? "" : "Seleccioná un profesional."),
-  date: (v) => (v ? "" : "Seleccioná una fecha."),
+  date: (v) => {
+    if (!v) return "Seleccioná una fecha.";
+    if (esFechaAnteriorAHoy(v)) return "La fecha no puede ser anterior a hoy.";
+    return "";
+  },
   time: (v) => (v ? "" : "Seleccioná un horario."),
 };
 
@@ -532,6 +557,9 @@ selectProfesional.addEventListener("change", () => {
   inputFecha.value = "";
   mostrarErrorCampo("date", "");
   inputFecha.disabled = !selectProfesional.value;
+  if (!inputFecha.disabled) {
+    inputFecha.min = obtenerFechaHoyISOLocal();
+  }
 
   selectHora.value = "";
   selectHora.disabled = true;
@@ -539,10 +567,17 @@ selectProfesional.addEventListener("change", () => {
 });
 
 inputFecha.addEventListener("change", () => {
-  mostrarErrorCampo("date", validacionesCampos.date(inputFecha.value));
+  const fechaElegida = inputFecha.value;
+  mostrarErrorCampo("date", validacionesCampos.date(fechaElegida));
+
+  if (esFechaAnteriorAHoy(fechaElegida)) {
+    selectHora.disabled = true;
+    selectHora.innerHTML = '<option value="">Fecha inválida</option>';
+    return;
+  }
 
   const idProfesional = Number(selectProfesional.value);
-  const fecha = inputFecha.value;
+  const fecha = fechaElegida;
 
   const idServicio = Number(selectServicio.value);
   const servicio = obtenerServicioPorId(idServicio);
@@ -564,6 +599,7 @@ inputFecha.addEventListener("change", () => {
     fecha,
     obtenerReservasStorage,
     duracionMinutos,
+    new Date(),
   );
 
   if (horariosDisponibles.length === 0) {
@@ -608,8 +644,27 @@ formularioReserva.addEventListener("submit", (e) => {
   );
   if (Object.values(errores).some(Boolean)) return;
 
+  if (esFechaAnteriorAHoy(fecha)) {
+    mostrarErrorCampo("date", "La fecha no puede ser anterior a hoy.");
+    return;
+  }
+
   const servicio = obtenerServicioPorId(idServicio);
   const duracionMinutos = obtenerDuracionServicioMinutos(servicio);
+
+  if (esMismaFechaQueHoy(fecha)) {
+    const minutosAhora = new Date().getHours() * 60 + new Date().getMinutes();
+    const inicioElegido = convertirHoraAMinutos(hora);
+
+    if (inicioElegido <= minutosAhora) {
+      abrirModal(`
+        <h2>Horario no disponible</h2>
+        <p>Ese horario ya pasó para el día de hoy. Elegí un horario posterior.</p>
+        <a href="#reservar" class="btn btn-primary btn-block" data-accion="cerrar-modal">Volver</a>
+      `);
+      return;
+    }
+  }
 
   if (
     estaHorarioOcupado(
