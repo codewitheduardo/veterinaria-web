@@ -35,3 +35,32 @@ describe("servicios.js", () => {
     expect(obtenerDuracionServicioMinutos({ categoria: "MEDICAL" })).toBe(30);
   });
 });
+
+test("obtenerServicioPorId maneja ids inválidos", () => {
+  expect(obtenerServicioPorId("abc")).toBeNull();
+  expect(obtenerServicioPorId(null)).toBeNull();
+  expect(obtenerServicioPorId(undefined)).toBeNull();
+  expect(obtenerServicioPorId("")).toBeNull();
+  expect(obtenerServicioPorId(0)).toBeNull();
+  expect(obtenerServicioPorId(-1)).toBeNull();
+});
+
+test("formatearPrecio acepta string numérico", () => {
+  expect(formatearPrecio("1200")).toBe("$1.200");
+});
+
+test("formatearPrecio con inválidos devuelve $NaN (comportamiento actual)", () => {
+  expect(formatearPrecio("abc")).toBe("$NaN");
+  expect(formatearPrecio(undefined)).toBe("$NaN");
+});
+
+test("claseCategoria maneja undefined y números", () => {
+  expect(claseCategoria(undefined)).toBe("");
+  expect(claseCategoria(123)).toBe("123");
+});
+
+test("obtenerDuracionServicioMinutos es case-insensitive y tolera null", () => {
+  expect(obtenerDuracionServicioMinutos({ categoria: "aesthetic" })).toBe(60);
+  expect(obtenerDuracionServicioMinutos()).toBe(30);
+  expect(obtenerDuracionServicioMinutos(null)).toBe(30);
+});

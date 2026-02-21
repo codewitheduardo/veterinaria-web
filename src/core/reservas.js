@@ -27,7 +27,6 @@ function obtenerHorariosDisponiblesPorProfesional(
 
   const finAtencion = obtenerFinAtencionMinutos(fecha);
 
-  // Si la fecha elegida es hoy, no permitir horarios que ya pasaron.
   const esHoy =
     convertirAFechaLocal(fecha).getTime() === convertirAFechaLocal(ahora).getTime();
   const minutosAhora = ahora.getHours() * 60 + ahora.getMinutes();
