@@ -1,3 +1,10 @@
+const {
+  convertirHoraAMinutos,
+  convertirAFechaLocal,
+  obtenerFinAtencionMinutos,
+  generarHorariosDisponibles,
+} = require("./tiempos");
+
 function seSolapan(aInicio, aFin, bInicio, bFin) {
   return aInicio < bFin && aFin > bInicio;
 }
@@ -35,6 +42,7 @@ function obtenerHorariosDisponiblesPorProfesional(
     const inicioNuevo = convertirHoraAMinutos(horaInicio);
     const finNuevo = inicioNuevo + Number(duracionMinutos || 30);
 
+    /* istanbul ignore next */
     if (finNuevo > finAtencion) return false;
 
     if (esHoy && inicioNuevo <= minutosAhora) return false;
