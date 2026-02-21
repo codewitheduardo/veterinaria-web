@@ -70,6 +70,7 @@ function obtenerDuracionServicioMinutos(servicio) {
   return categoria === "AESTHETIC" ? 60 : 30;
 }
 
+ /* istanbul ignore next */
 if (typeof module !== "undefined") {
   module.exports = {
     servicios,

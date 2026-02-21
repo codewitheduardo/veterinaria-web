@@ -59,6 +59,7 @@ function generarHorariosDisponibles(fecha, duracionMinutos = 30) {
   return horarios;
 }
 
+ /* istanbul ignore next */
 if (typeof module !== "undefined") {
   module.exports = {
     convertirHoraAMinutos,

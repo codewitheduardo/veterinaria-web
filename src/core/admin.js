@@ -42,6 +42,7 @@ function obtenerReservasParaAdmin(reservas, fechaISO) {
   return ordenarReservasPorHora(filtradas);
 }
 
+ /* istanbul ignore next */
 if (typeof module !== "undefined") {
   module.exports = {
     USUARIO_ADMIN,

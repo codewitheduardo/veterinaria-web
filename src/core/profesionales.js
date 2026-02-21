@@ -72,6 +72,7 @@ function obtenerProfesionalesPorServicio(idServicio) {
   return profesionales.filter((p) => p.servicios.includes(id));
 }
 
+ /* istanbul ignore next */
 if (typeof module !== "undefined") {
   module.exports = {
     profesionales,

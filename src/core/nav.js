@@ -34,6 +34,7 @@ function resolverSeccionDesdeHash(hash) {
   return hash;
 }
 
+ /* istanbul ignore next */
 if (typeof module !== "undefined") {
   module.exports = {
     obtenerMapaVisibilidadSecciones,

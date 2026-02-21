@@ -103,6 +103,7 @@ function marcarReservasFinalizadas(reservas, ahora = new Date()) {
   return { reservasActualizadas: copia, cambio };
 }
 
+ /* istanbul ignore next */
 if (typeof module !== "undefined") {
   module.exports = {
     obtenerReservasOcupadas,
