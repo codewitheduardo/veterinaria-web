@@ -134,3 +134,39 @@ describe("admin.js", () => {
     expect(resultado.map((r) => r.hora)).toEqual(["09:30", "10:00", "12:00"]);
   });
 });
+
+test("filtrarReservasPorFecha maneja reservas null/undefined", () => {
+  expect(filtrarReservasPorFecha(null, "2026-02-21")).toEqual([]);
+  expect(filtrarReservasPorFecha(undefined, "")).toEqual([]);
+});
+
+test("ordenarReservasPorHora no muta el array original", () => {
+  const reservas = [{ hora: "12:00" }, { hora: "09:30" }];
+  const copia = [...reservas];
+
+  ordenarReservasPorHora(reservas);
+
+  expect(reservas).toEqual(copia);
+});
+
+test("aMinutos maneja formatos raros sin romper", () => {
+  expect(aMinutos("9:5")).toBe(545);      // 9*60 + 5
+  expect(aMinutos("09")).toBe(540);       // "09:0"
+  expect(aMinutos("aa:bb")).toBe(0);      // NaN -> 0
+});
+
+test("ordenarReservasPorHora coloca horas vacías como 0 minutos", () => {
+  const reservas = [{ hora: "10:00" }, { hora: null }, { hora: "09:30" }];
+  const ordenadas = ordenarReservasPorHora(reservas);
+
+  expect(ordenadas.map((r) => r.hora)).toEqual([null, "09:30", "10:00"]);
+});
+
+test("obtenerReservasParaAdmin con reservas null devuelve []", () => {
+  expect(obtenerReservasParaAdmin(null, "2026-02-21")).toEqual([]);
+});
+
+test("ordenarReservasPorHora con null devuelve []", () => {
+  expect(ordenarReservasPorHora(null)).toEqual([]);
+  expect(ordenarReservasPorHora(undefined)).toEqual([]);
+});
