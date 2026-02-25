@@ -1,9 +1,26 @@
-const {
-  convertirHoraAMinutos,
-  convertirAFechaLocal,
-  obtenerFinAtencionMinutos,
-  generarHorariosDisponibles,
-} = require("./tiempos");
+// =======================
+// DEPENDENCIAS (browser + Jest)
+// =======================
+let convertirHoraAMinutosRef;
+let convertirAFechaLocalRef;
+let obtenerFinAtencionMinutosRef;
+let generarHorariosDisponiblesRef;
+
+/* istanbul ignore next */
+if (typeof require !== "undefined") {
+  // Jest / Node (CommonJS)
+  const tiempos = require("./tiempos");
+  convertirHoraAMinutosRef = tiempos.convertirHoraAMinutos;
+  convertirAFechaLocalRef = tiempos.convertirAFechaLocal;
+  obtenerFinAtencionMinutosRef = tiempos.obtenerFinAtencionMinutos;
+  generarHorariosDisponiblesRef = tiempos.generarHorariosDisponibles;
+} else {
+  // Navegador (tiempos.js ya fue cargado antes por <script>)
+  convertirHoraAMinutosRef = convertirHoraAMinutos;
+  convertirAFechaLocalRef = convertirAFechaLocal;
+  obtenerFinAtencionMinutosRef = obtenerFinAtencionMinutos;
+  generarHorariosDisponiblesRef = generarHorariosDisponibles;
+}
 
 function seSolapan(aInicio, aFin, bInicio, bFin) {
   return aInicio < bFin && aFin > bInicio;
@@ -25,21 +42,24 @@ function obtenerHorariosDisponiblesPorProfesional(
   duracionMinutos = 30,
   ahora = new Date(),
 ) {
-  const todos = generarHorariosDisponibles(fecha, duracionMinutos);
+  const todos = generarHorariosDisponiblesRef(fecha, duracionMinutos);
+
   const reservasOcupadas = obtenerReservasOcupadas(
     idProfesional,
     fecha,
     obtenerReservas,
   );
 
-  const finAtencion = obtenerFinAtencionMinutos(fecha);
+  const finAtencion = obtenerFinAtencionMinutosRef(fecha);
 
   const esHoy =
-    convertirAFechaLocal(fecha).getTime() === convertirAFechaLocal(ahora).getTime();
+    convertirAFechaLocalRef(fecha).getTime() ===
+    convertirAFechaLocalRef(ahora).getTime();
+
   const minutosAhora = ahora.getHours() * 60 + ahora.getMinutes();
 
   return todos.filter((horaInicio) => {
-    const inicioNuevo = convertirHoraAMinutos(horaInicio);
+    const inicioNuevo = convertirHoraAMinutosRef(horaInicio);
     const finNuevo = inicioNuevo + Number(duracionMinutos || 30);
 
     /* istanbul ignore next */
@@ -48,7 +68,7 @@ function obtenerHorariosDisponiblesPorProfesional(
     if (esHoy && inicioNuevo <= minutosAhora) return false;
 
     return !reservasOcupadas.some((r) => {
-      const inicioExistente = convertirHoraAMinutos(r.hora);
+      const inicioExistente = convertirHoraAMinutosRef(r.hora);
       const durExistente = Number(r.duracionMinutos || 30);
       const finExistente = inicioExistente + durExistente;
 
@@ -70,11 +90,11 @@ function estaHorarioOcupado(
     obtenerReservas,
   );
 
-  const inicioNuevo = convertirHoraAMinutos(horaInicio);
+  const inicioNuevo = convertirHoraAMinutosRef(horaInicio);
   const finNuevo = inicioNuevo + Number(duracionMinutos || 30);
 
   return reservasOcupadas.some((r) => {
-    const inicioExistente = convertirHoraAMinutos(r.hora);
+    const inicioExistente = convertirHoraAMinutosRef(r.hora);
     const durExistente = Number(r.duracionMinutos || 30);
     const finExistente = inicioExistente + durExistente;
 
@@ -103,7 +123,7 @@ function marcarReservasFinalizadas(reservas, ahora = new Date()) {
   return { reservasActualizadas: copia, cambio };
 }
 
- /* istanbul ignore next */
+/* istanbul ignore next */
 if (typeof module !== "undefined") {
   module.exports = {
     obtenerReservasOcupadas,
