@@ -603,6 +603,18 @@ inputFecha.addEventListener("change", () => {
   );
 
   if (horariosDisponibles.length === 0) {
+    if (esMismaFechaQueHoy(fecha)) {
+      const ahora = new Date();
+      const minutosAhora = ahora.getHours() * 60 + ahora.getMinutes();
+      const finAtencion = obtenerFinAtencionMinutos(fecha);
+
+      if (minutosAhora >= finAtencion) {
+        selectHora.disabled = true;
+        selectHora.innerHTML = '<option value="">Local cerrado</option>';
+        return;
+      }
+    }
+
     selectHora.disabled = true;
     selectHora.innerHTML =
       '<option value="">No hay horarios disponibles</option>';
