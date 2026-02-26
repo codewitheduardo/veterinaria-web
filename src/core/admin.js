@@ -5,8 +5,13 @@ function validarCredencialesAdmin(email, clave) {
   return email === USUARIO_ADMIN && clave === CLAVE_ADMIN;
 }
 
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+
 function obtenerFechaHoyISO() {
-  return new Date().toISOString().split("T")[0];
+  const hoy = new Date();
+  return `${hoy.getFullYear()}-${pad2(hoy.getMonth() + 1)}-${pad2(hoy.getDate())}`;
 }
 
 function obtenerClaveSesionAdmin() {
