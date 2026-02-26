@@ -208,14 +208,12 @@ cuerpoModal?.addEventListener("click", (e) => {
 
   e.preventDefault();
 
-  // NO: no guarda nada
   if (btnNo) {
     reservaPendiente = null;
     cerrarModal();
     return;
   }
 
-  // SI: guarda y muestra el modal final
   if (!reservaPendiente) return;
 
   const reservaFinal = {
@@ -229,7 +227,6 @@ cuerpoModal?.addEventListener("click", (e) => {
 
   abrirModalReservaConfirmada(reservaFinal);
 
-  // Reset UI (igual que venías haciendo)
   formularioReserva.reset();
 
   selectProfesional.disabled = true;
@@ -684,10 +681,14 @@ function abrirModalReservaConfirmada(reserva) {
       <p><strong>Servicio:</strong> ${reserva.servicio}</p>
       <p><strong>Profesional:</strong> ${reserva.profesional}</p>
 
-      <p><strong>Fecha:</strong> ${new Date(fecha + "T00:00:00").toLocaleDateString(
-        "es-AR",
-        { weekday: "long", year: "numeric", month: "long", day: "numeric" },
-      )}</p>
+      <p><strong>Fecha:</strong> ${new Date(
+        fecha + "T00:00:00",
+      ).toLocaleDateString("es-AR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })}</p>
 
       <p><strong>Hora:</strong> ${hora}</p>
     </div>
@@ -716,10 +717,14 @@ function abrirModalReservaConfirmada(reserva) {
       <p><strong>Teléfono:</strong> ${reserva.telefono}</p>
       <p><strong>Servicio:</strong> ${reserva.servicio}</p>
       <p><strong>Profesional:</strong> ${reserva.profesional}</p>
-      <p><strong>Fecha:</strong> ${new Date(reserva.fecha + "T00:00:00").toLocaleDateString(
-        "es-AR",
-        { weekday: "long", year: "numeric", month: "long", day: "numeric" },
-      )}</p>
+      <p><strong>Fecha:</strong> ${new Date(
+        reserva.fecha + "T00:00:00",
+      ).toLocaleDateString("es-AR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })}</p>
       <p><strong>Hora:</strong> ${reserva.hora}</p>
     </div>
 
@@ -807,32 +812,38 @@ formularioReserva.addEventListener("submit", (e) => {
 
   const profesional = obtenerProfesionalPorId(idProfesional);
 
-  // 1) armar reservaPendiente (NO se guarda aún)
-reservaPendiente = {
-  dueno: nombreDueno.trim(),
-  mascota: nombreMascota.trim(),
-  telefono: telefono.trim(),
-  servicioId: idServicio,
-  servicio: selectServicio.options[selectServicio.selectedIndex]?.text?.trim() || "",
-  profesionalId: idProfesional,
-  profesional: selectProfesional.options[selectProfesional.selectedIndex]?.text?.trim() || "",
-  fecha,
-  hora,
-  duracionMinutos,
-  estado: "pendiente",
-};
+  reservaPendiente = {
+    dueno: nombreDueno.trim(),
+    mascota: nombreMascota.trim(),
+    telefono: telefono.trim(),
+    servicioId: idServicio,
+    servicio:
+      selectServicio.options[selectServicio.selectedIndex]?.text?.trim() || "",
+    profesionalId: idProfesional,
+    profesional:
+      selectProfesional.options[
+        selectProfesional.selectedIndex
+      ]?.text?.trim() || "",
+    fecha,
+    hora,
+    duracionMinutos,
+    estado: "pendiente",
+  };
 
-// 2) abrir modal de confirmación SI/NO (usa el mismo modal)
-abrirModal(`
+  abrirModal(`
   <h2 id="modalTitle">¿Confirmar reserva?</h2>
 
   <div class="modal-info">
     <p><strong>Servicio:</strong> ${reservaPendiente.servicio}</p>
     <p><strong>Profesional:</strong> ${reservaPendiente.profesional}</p>
-    <p><strong>Fecha:</strong> ${new Date(fecha + "T00:00:00").toLocaleDateString(
-      "es-AR",
-      { weekday: "long", year: "numeric", month: "long", day: "numeric" },
-    )}</p>
+    <p><strong>Fecha:</strong> ${new Date(
+      fecha + "T00:00:00",
+    ).toLocaleDateString("es-AR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })}</p>
     <p><strong>Hora:</strong> ${hora}</p>
   </div>
 

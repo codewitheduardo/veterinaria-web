@@ -1135,102 +1135,199 @@ body.kbd-focus .team-card:focus-within .team-card-overlay-content {
 }
 
 /* FOOTER (HU-19) */
-.footer {
-  background: var(--sage-800);
+.footer{
+  position: relative;
+  overflow: hidden;
   color: var(--white);
+  /* más “vida” sin agregar contenido: degradé sutil */
+  background: linear-gradient(135deg, #1f332c 0%, #2a433a 55%, #1c2d27 100%);
 }
 
-.footer-container {
+.footer::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.28;
+  /* textura suave, muy liviana */
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255,255,255,.12), transparent 55%),
+    radial-gradient(circle at 85% 35%, rgba(255,255,255,.09), transparent 55%),
+    radial-gradient(circle at 40% 85%, rgba(255,255,255,.08), transparent 55%);
+}
+
+.footer-container{
+  position: relative; /* por el overlay del ::before */
   display: grid;
   grid-template-columns: 1fr;
   gap: clamp(var(--space-5), 4vw, var(--space-8));
   padding-block: clamp(2rem, 5vw, var(--space-9));
   align-items: start;
 }
-.footer-col h4 {
-  font-size: 1.06rem;
-  font-weight: 800;
-  margin-bottom: var(--space-4);
-}
-.footer-brand {
+
+.footer-brand{
   font-size: 1.35rem;
   font-weight: 800;
   margin-bottom: var(--space-3);
 }
-.footer-col p {
+
+.footer-col h4{
+  font-size: 1.06rem;
+  font-weight: 800;
+  margin-bottom: var(--space-4);
+  position: relative;
+  padding-bottom: 0.35rem;
+}
+
+.footer-col h4::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 52px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.22);
+}
+
+.footer-col p,
+.footer-cta p{
   color: #d8e1de;
   line-height: 1.7;
   margin-bottom: var(--space-3);
 }
-.footer-col ul {
+
+.footer-col ul{
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 0.6rem;
 }
-.footer-col ul a {
+
+/* Enlaces en general */
+.footer-col ul a{
   color: #d8e1de;
-  transition: color 0.25s;
+  transition: color 0.25s, background 0.25s, border-color 0.25s, transform 0.25s;
 }
-.footer-col ul a:hover {
+.footer-col ul a:hover{
   color: var(--white);
 }
 
-.social-links {
+/* Enlaces rápidos: compacta “lista larga” sin quitar links */
+.footer-container .footer-col:nth-child(2) ul{
+  display: grid;
+  grid-template-columns: 1fr; /* mobile: 1 col para que no quede apretado */
+  gap: 0.55rem 0.7rem;
+}
+
+.footer-container .footer-col:nth-child(2) ul a{
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  line-height: 1.2;
+}
+
+.footer-container .footer-col:nth-child(2) ul a:hover{
+  background: rgba(255,255,255,.10);
+  border-color: rgba(255,255,255,.18);
+  transform: translateY(-1px);
+}
+
+/* Redes: botones prolijos y con hover suave */
+.social-links{
   display: flex;
   gap: var(--space-3);
   margin-top: var(--space-4);
   flex-wrap: wrap;
 }
-.social-link {
+
+.social-link{
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   color: #d8e1de;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #2a3f36;
-  margin-left: -10px;
-  border: none;
+  padding: 0.45rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.05);
 }
-.social-link:hover {
+
+.social-link:hover{
   color: var(--white);
+  background: rgba(255,255,255,.10);
+  border-color: rgba(255,255,255,.22);
 }
-.social-link svg {
+
+.social-link svg{
   flex: 0 0 auto;
 }
 
-.footer-cta p {
-  color: #d8e1de;
-  margin-bottom: var(--space-3);
-}
-.footer-cta-btn {
-  display: inline-block;
-  margin-top: var(--space-2);
+.social-link span{
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
-.footer-bottom {
-  border-top: 1px solid #2a3f36;
+/* Footer bottom centrado (solo hay 1 texto) */
+.footer-bottom{
+  position: relative;
+  border-top: 1px solid rgba(255,255,255,.12);
   padding-block: var(--space-5);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   color: #d8e1de;
   font-size: 0.95rem;
+  text-align: center;
 }
-.footer-bottom p {
-  margin-left: 45px;
+.footer-bottom p{
+  margin: 0;
+  width: 100%;
+  padding-inline: var(--space-4);
 }
 
-@media (min-width: 992px) {
-  .footer-container {
+/* Ajustes responsive */
+@media (min-width: 480px){
+  .footer-container .footer-col:nth-child(2) ul{
+    grid-template-columns: 1fr 1fr; /* desde 480: 2 cols */
+  }
+}
+
+@media (min-width: 768px){
+  .footer-container{
+    grid-template-columns: 1.3fr 1fr;
+    column-gap: var(--space-7);
+    row-gap: var(--space-7);
+  }
+  /* CTA pasa abajo ocupando el ancho completo */
+  .footer-cta{
+    grid-column: 1 / -1;
+    max-width: 720px;
+  }
+  .footer-cta-btn{
+    width: max-content;
+  }
+}
+
+@media (min-width: 992px){
+  .footer-container{
     grid-template-columns: 1.4fr 1fr 1.2fr;
     column-gap: var(--space-8);
     row-gap: var(--space-7);
   }
+  .footer-cta{
+    grid-column: auto;
+    max-width: none;
+  }
+  /* en desktop dejamos respirar un poquito más el grid de enlaces */
+  .footer-container .footer-col:nth-child(2) ul{
+    gap: 0.65rem 0.9rem;
+  }
 }
-
-/* PORTABILIDAD (HU-14) */
-/* NAVBAR */
 @media (max-width: 768px) {
   .nav-toggle {
     display: block;
@@ -1694,3 +1791,99 @@ body.kbd-focus .team-card:focus-within .team-card-overlay-content {
     font-size: 0.98rem;
   }
 }
+
+@media (min-width: 769px) {
+  .hero--banner .hero-banner-content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero--banner .hero-pill {
+    align-self: center;
+  }
+
+  .hero--banner .hero-subtitle {
+    margin-inline: auto;
+  }
+
+  .hero--banner .hero-ctas {
+    justify-content: center;
+  }
+
+  .hero--banner .hero-metrics {
+    justify-content: center;
+  }
+}
+
+/* === OVERRIDE: footer centrado SOLO en mobile === */
+@media (max-width: 768px) {
+  /* Centrar texto y bloques */
+  .footer,
+  .footer p,
+  .footer a,
+  .footer li {
+    text-align: center;
+  }
+
+  .footer-container {
+    justify-items: center;
+    gap: 25px;
+  }
+
+  .footer-col {
+    align-items: center;
+  }
+
+  /* Subrayado del título centrado */
+  .footer-col h4::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Enlaces rápidos: que no se vea “lista larga” y quede centrado */
+  .footer-col ul {
+    justify-content: center;
+    justify-items: center;
+  }
+
+  .footer-col ul a {
+    justify-content: center;
+  }
+
+  /* Redes centradas */
+  .social-links {
+    justify-content: center;
+  }
+
+  /* Copyright centrado */
+  .footer-bottom {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+/* === MOBILE: Enlaces Rápidos en SOLO 2 filas (3 columnas) === */
+@media (max-width: 768px) {
+  .footer-container .footer-col:nth-child(2) ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 + 2 => 2 filas */
+    gap: 0.55rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer-container .footer-col:nth-child(2) ul a {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.45rem 0.4rem; /* más compacto */
+    font-size: 0.9rem;
+    line-height: 1.05;
+    border-radius: 999px;
+    white-space: nowrap;      /* evita que se parta el texto */
+  }
+}
+
+
