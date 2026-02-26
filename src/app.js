@@ -170,6 +170,7 @@ const botonCerrarModal = document.getElementById("modalClose");
 const cuerpoModal = document.getElementById("modalBody");
 
 let servicioSeleccionadoDesdeModal = null;
+let reservaPendiente = null;
 
 function abrirModal(contenidoHtml) {
   if (!contenedorModal || !cuerpoModal) return;
@@ -198,6 +199,47 @@ cuerpoModal?.addEventListener("click", (e) => {
   const objetivo = e.target.closest("[data-accion='cerrar-modal']");
   if (!objetivo) return;
   cerrarModal();
+});
+
+cuerpoModal?.addEventListener("click", (e) => {
+  const btnSi = e.target.closest("[data-accion='confirmar-reserva']");
+  const btnNo = e.target.closest("[data-accion='cancelar-reserva']");
+  if (!btnSi && !btnNo) return;
+
+  e.preventDefault();
+
+  // NO: no guarda nada
+  if (btnNo) {
+    reservaPendiente = null;
+    cerrarModal();
+    return;
+  }
+
+  // SI: guarda y muestra el modal final
+  if (!reservaPendiente) return;
+
+  const reservaFinal = {
+    ...reservaPendiente,
+    id: crypto?.randomUUID?.() || String(Date.now()),
+    createdAt: new Date().toISOString(),
+  };
+
+  agregarReservaStorage(reservaFinal);
+  reservaPendiente = null;
+
+  abrirModalReservaConfirmada(reservaFinal);
+
+  // Reset UI (igual que venías haciendo)
+  formularioReserva.reset();
+
+  selectProfesional.disabled = true;
+  selectProfesional.innerHTML =
+    '<option value="">Primero elegí un servicio</option>';
+
+  inputFecha.disabled = true;
+
+  selectHora.disabled = true;
+  selectHora.innerHTML = '<option value="">Elegí fecha y profesional</option>';
 });
 
 cuerpoModal?.addEventListener("click", (e) => {
@@ -629,6 +671,74 @@ inputFecha.addEventListener("change", () => {
       .join("");
 });
 
+function abrirModalReservaConfirmada(reserva) {
+  const { fecha, hora } = reserva;
+
+  abrirModal(`
+    <h2 id="modalTitle">✅ Reserva Confirmada</h2>
+
+    <div class="modal-info">
+      <p><strong>Dueño:</strong> ${reserva.dueno}</p>
+      <p><strong>Mascota:</strong> ${reserva.mascota}</p>
+      <p><strong>Teléfono:</strong> ${reserva.telefono}</p>
+      <p><strong>Servicio:</strong> ${reserva.servicio}</p>
+      <p><strong>Profesional:</strong> ${reserva.profesional}</p>
+
+      <p><strong>Fecha:</strong> ${new Date(fecha + "T00:00:00").toLocaleDateString(
+        "es-AR",
+        { weekday: "long", year: "numeric", month: "long", day: "numeric" },
+      )}</p>
+
+      <p><strong>Hora:</strong> ${hora}</p>
+    </div>
+
+    <p class="modal-info">
+      <strong>Aviso de puntualidad:</strong> si llegás tarde y el profesional ya atiende el siguiente turno,
+      el turno se pierde y deberás reprogramarlo.
+    </p>
+
+    <p class="modal-legal">
+      Tu información no se comparte con terceros, no se usa con fines comerciales y se maneja de forma interna,
+      respetando la Ley de Protección de Datos Personales (Ley N.º 18.331).
+    </p>
+
+    <a href="#reservar" class="btn btn-primary btn-block" data-accion="cerrar-modal">Aceptar</a>
+  `);
+}
+
+function abrirModalReservaConfirmada(reserva) {
+  abrirModal(`
+    <h2 id="modalTitle">✅ Reserva Confirmada</h2>
+
+    <div class="modal-info">
+      <p><strong>Dueño:</strong> ${reserva.dueno}</p>
+      <p><strong>Mascota:</strong> ${reserva.mascota}</p>
+      <p><strong>Teléfono:</strong> ${reserva.telefono}</p>
+      <p><strong>Servicio:</strong> ${reserva.servicio}</p>
+      <p><strong>Profesional:</strong> ${reserva.profesional}</p>
+      <p><strong>Fecha:</strong> ${new Date(reserva.fecha + "T00:00:00").toLocaleDateString(
+        "es-AR",
+        { weekday: "long", year: "numeric", month: "long", day: "numeric" },
+      )}</p>
+      <p><strong>Hora:</strong> ${reserva.hora}</p>
+    </div>
+
+    <p class="modal-info">
+      <strong>Aviso de puntualidad:</strong> si llegás tarde y el profesional ya atiende el siguiente turno,
+      el turno se pierde y deberás reprogramarlo.
+    </p>
+
+    <p class="modal-legal">
+      Tu información no se comparte con terceros, no se usa con fines comerciales y se maneja de forma interna,
+      respetando la Ley de Protección de Datos Personales (Ley N.º 18.331).
+    </p>
+
+    <button type="button" class="btn btn-primary btn-block" data-accion="cerrar-modal">
+      Aceptar
+    </button>
+  `);
+}
+
 formularioReserva.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -697,57 +807,43 @@ formularioReserva.addEventListener("submit", (e) => {
 
   const profesional = obtenerProfesionalPorId(idProfesional);
 
-  const reserva = {
-    id: crypto?.randomUUID?.() || String(Date.now()),
-    dueno: nombreDueno.trim(),
-    mascota: nombreMascota.trim(),
-    telefono: telefono.trim(),
-    servicioId: idServicio,
-    servicio: servicio?.titulo || "",
-    profesionalId: idProfesional,
-    profesional: profesional?.nombre || "",
-    fecha,
-    hora,
-    duracionMinutos,
-    estado: "pendiente",
-    createdAt: new Date().toISOString(),
-  };
+  // 1) armar reservaPendiente (NO se guarda aún)
+reservaPendiente = {
+  dueno: nombreDueno.trim(),
+  mascota: nombreMascota.trim(),
+  telefono: telefono.trim(),
+  servicioId: idServicio,
+  servicio: selectServicio.options[selectServicio.selectedIndex]?.text?.trim() || "",
+  profesionalId: idProfesional,
+  profesional: selectProfesional.options[selectProfesional.selectedIndex]?.text?.trim() || "",
+  fecha,
+  hora,
+  duracionMinutos,
+  estado: "pendiente",
+};
 
-  agregarReservaStorage(reserva);
-
-  abrirModal(`
-  <h2 id="modalTitle">✅ Reserva Confirmada</h2>
+// 2) abrir modal de confirmación SI/NO (usa el mismo modal)
+abrirModal(`
+  <h2 id="modalTitle">¿Confirmar reserva?</h2>
 
   <div class="modal-info">
-    <p><strong>Dueño:</strong> ${reserva.dueno}</p>
-    <p><strong>Mascota:</strong> ${reserva.mascota}</p>
-    <p><strong>Teléfono:</strong> ${reserva.telefono}</p>
-    <p><strong>Servicio:</strong> ${reserva.servicio}</p>
-    <p><strong>Profesional:</strong> ${reserva.profesional}</p>
-
-    <p><strong>Fecha:</strong> ${new Date(
-      fecha + "T00:00:00",
-    ).toLocaleDateString("es-AR", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })}</p>
-
+    <p><strong>Servicio:</strong> ${reservaPendiente.servicio}</p>
+    <p><strong>Profesional:</strong> ${reservaPendiente.profesional}</p>
+    <p><strong>Fecha:</strong> ${new Date(fecha + "T00:00:00").toLocaleDateString(
+      "es-AR",
+      { weekday: "long", year: "numeric", month: "long", day: "numeric" },
+    )}</p>
     <p><strong>Hora:</strong> ${hora}</p>
   </div>
 
-  <p class="modal-info">
-    <strong>Aviso de puntualidad:</strong> si llegás tarde y el profesional ya atiende el siguiente turno,
-    el turno se pierde y deberás reprogramarlo.
-  </p>
-
-  <p class="modal-legal">
-    Tu información no se comparte con terceros, no se usa con fines comerciales y se maneja de forma interna,
-    respetando la Ley de Protección de Datos Personales (Ley N.º 18.331).
-  </p>
-
-  <a href="#reservar" class="btn btn-primary btn-block" data-accion="cerrar-modal">Aceptar</a>
+  <div style="display:flex; gap:12px; margin-top: 14px;">
+    <button type="button" class="btn btn-secondary btn-block" data-accion="cancelar-reserva">
+      No
+    </button>
+    <button type="button" class="btn btn-primary btn-block" data-accion="confirmar-reserva">
+      Sí, confirmar
+    </button>
+  </div>
 `);
 
   formularioReserva.reset();
