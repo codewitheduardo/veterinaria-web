@@ -1042,6 +1042,50 @@ function refrescarFormularioAdmin() {
 // ========================================
 const cuerpoTablaAdmin = document.getElementById("adminTableBody");
 
+
+// =======================
+// ESTADOS DE TURNO (visual)
+// =======================
+// Nota: "en_curso" se calcula en base a fecha/hora/duración, pero NO se persiste.
+// "finalizado" se persiste mediante actualizarReservasFinalizadas().
+function obtenerEstadoVisualTurno(reserva, ahora = new Date()) {
+  if (!reserva) return "pendiente";
+
+  // Estados persistidos que tienen prioridad
+  if (reserva.estado === "cancelado") return "cancelado";
+  if (reserva.estado === "finalizado") return "finalizado";
+
+  // Si no hay datos suficientes, usamos el estado guardado o "pendiente"
+  if (!reserva.fecha || !reserva.hora || typeof reserva.duracionMinutos !== "number") {
+    return reserva.estado || "pendiente";
+  }
+
+  const inicio = new Date(`${reserva.fecha}T${reserva.hora}`);
+  if (isNaN(inicio.getTime())) return reserva.estado || "pendiente";
+
+  const fin = new Date(inicio.getTime() + reserva.duracionMinutos * 60000);
+
+  if (ahora >= fin) return "finalizado";
+  if (ahora >= inicio) return "en_curso";
+
+  return reserva.estado || "pendiente";
+}
+
+function formatearEstadoVisual(estado) {
+  switch (estado) {
+    case "en_curso":
+      return "En curso";
+    case "finalizado":
+      return "Finalizado";
+    case "cancelado":
+      return "Cancelado";
+    case "pendiente":
+      return "Pendiente";
+    default:
+      return estado;
+  }
+}
+
 function renderizarTablaAdmin() {
   actualizarReservasFinalizadas();
 
@@ -1053,7 +1097,8 @@ function renderizarTablaAdmin() {
   cuerpoTablaAdmin.innerHTML = reservasAMostrar
     .map((r) => {
       const indice = reservas.indexOf(r);
-      const deshabilitado = r.estado === "cancelado" || r.estado === "finalizado";
+      const estadoVisual = obtenerEstadoVisualTurno(r, new Date());
+      const deshabilitado = estadoVisual === "cancelado" || estadoVisual === "finalizado";
 
       return `
         <tr>
@@ -1065,7 +1110,7 @@ function renderizarTablaAdmin() {
           <td data-label="Servicio">${r.servicio}</td>
           <td data-label="Profesional">${r.profesional}</td>
           <td data-label="Estado">
-            <span class="status-badge ${r.estado}">${r.estado}</span>
+            <span class="status-badge ${estadoVisual}">${formatearEstadoVisual(estadoVisual)}</span>
           </td>
           <td data-label="Acción">
             <button class="btn-cancel" data-indice="${indice}" ${deshabilitado ? "disabled" : ""}>
