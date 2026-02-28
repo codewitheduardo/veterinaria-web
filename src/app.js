@@ -1053,7 +1053,7 @@ function renderizarTablaAdmin() {
   cuerpoTablaAdmin.innerHTML = reservasAMostrar
     .map((r) => {
       const indice = reservas.indexOf(r);
-      const deshabilitado = r.estado === "cancelado";
+      const deshabilitado = r.estado === "cancelado" || r.estado === "finalizado";
 
       return `
         <tr>
@@ -1098,6 +1098,16 @@ function abrirModalConfirmacionCancelacion(indice) {
 
   if (!reserva) return;
 
+  if (reserva.estado === "finalizado") {
+    abrirModal(`
+      <h2 id="modalTitle">No se puede cancelar</h2>
+      <p>Este turno ya está <strong>finalizado</strong>, por lo tanto no puede cancelarse.</p>
+      <button class="btn btn-primary btn-block" data-accion="cancelar-ok">Aceptar</button>
+    `);
+    indiceCancelacionPendiente = null;
+    return;
+  }
+
   abrirModal(`
     <h2 id="modalTitle">¿Cancelar reserva?</h2>
 
@@ -1134,7 +1144,18 @@ cuerpoModal?.addEventListener("click", (e) => {
 
   if (indiceCancelacionPendiente === null) return;
 
-  cancelarReservaStorage(indiceCancelacionPendiente);
+  const ok = cancelarReservaStorage(indiceCancelacionPendiente);
+  if (!ok) {
+    indiceCancelacionPendiente = null;
+    cerrarModal();
+    renderizarTablaAdmin();
+    abrirModal(`
+      <h2 id="modalTitle">No se puede cancelar</h2>
+      <p>Este turno ya está <strong>finalizado</strong>, por lo tanto no puede cancelarse.</p>
+      <button class="btn btn-primary btn-block" data-accion="cancelar-ok">Aceptar</button>
+    `);
+    return;
+  }
   indiceCancelacionPendiente = null;
 
   cerrarModal();
@@ -1191,10 +1212,14 @@ function agregarReservaStorage(reserva) {
 
 function cancelarReservaStorage(index) {
   const reservas = obtenerReservasStorage();
-  if (reservas[index]) {
-    reservas[index].estado = "cancelado";
-    guardarReservasStorage(reservas);
-  }
+  const r = reservas[index];
+  if (!r) return false;
+
+  if (r.estado === "finalizado") return false;
+
+  r.estado = "cancelado";
+  guardarReservasStorage(reservas);
+  return true;
 }
 
 // =======================
