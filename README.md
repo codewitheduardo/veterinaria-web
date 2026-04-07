@@ -61,4 +61,4 @@ npm test
 
 - Rodrigo Pintos Alvariza
 - Eduardo Monzón
-- Mateo Bragagunde Dufour
+- Mateo Bragunde Dufour
