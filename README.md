@@ -1,126 +1,64 @@
-# Veterinaria Huellas — Appointment Management System (Web Prototype)
+# Veterinaria Huellas — Sistema de Gestión de Turnos
 
-A navigable web prototype (100% client-side) for the digital management of appointments for **Huellas Veterinary Clinic**, designed to reduce the operational burden of phone scheduling and allow customers to self-manage bookings, while maintaining internal agenda control by the administrator.  
-The system **does not use a backend or database**; it works with **preloaded data** and persistence through **LocalStorage**.
+Prototipo web navegable para la gestión de turnos de la veterinaria **Huellas**, desarrollado 100% del lado del cliente con **HTML, CSS y JavaScript Vanilla**.  
+Permite a los clientes reservar turnos online y al administrador gestionar la agenda diaria.  
+El sistema no utiliza backend ni base de datos; trabaja con **LocalStorage** y datos precargados.
 
-## 🎯 Objectives
+## Funcionalidades principales
 
-* Allow visitors to view services and prices clearly.
-* Allow customers to book appointments online by showing **only available time slots**.
-* Allow the administrator to view and cancel reservations in order to control the daily schedule.
-* Validate the solution through a navigable prototype before making a larger investment.
+- Visualización de servicios, equipo y contacto
+- Reserva de turnos online
+- Cálculo de horarios disponibles según reglas de negocio
+- Confirmación visual de reserva
+- Panel de administrador con login
+- Listado y cancelación de reservas
+- Persistencia local con LocalStorage
 
-## 👥 Actors
+## Reglas de negocio
 
-* **Visitor**: browses the site and checks general information (services, team, contact).
-* **Customer**: a visitor who starts and completes the booking process.
-* **Administrator**: logs in with credentials and manages reservations (list/cancel).
+- Atención de lunes a viernes de 9:00 a 18:00
+- Sábados hasta las 12:00
+- Domingos cerrado
+- Turnos de 30 o 60 minutos según el servicio
+- Atención exclusiva para perros y gatos
+- Pago únicamente en el local
 
-## 🧩 Main Features (Summary)
+## Tecnologías utilizadas
 
-* Display of services (title, description, fixed price).
-* Services shown in carousel-style cards (loop with regular intervals).
-* Display of the team (preloaded members).
-* Appointment booking: owner/pet information + service + professional + date + time.
-* Available time slots calculated according to business rules and existing reservations.
-* Visual booking confirmation.
-* Administrator access (login) + daily listing + cancellation with confirmation.
-* Local persistence of reservations using LocalStorage.
+- HTML5
+- CSS3
+- JavaScript Vanilla
+- LocalStorage
+- Jest para testing
 
-## 📌 Business Rules
+## Estructura del proyecto
 
-* **Opening hours**: Monday to Friday 9:00 AM–6:00 PM; Saturdays until noon; closed on Sundays.
-* **Appointment duration**:
+- `index.html`: estructura principal
+- `styles.css`: estilos y diseño responsive
+- `src/app.js`: interacción con DOM y persistencia
+- `src/core/`: lógica del sistema y validaciones
 
-  * 30 minutes: clinical and medical services
-  * 60 minutes: grooming, bathing, and nail trimming
-* **Late arrival policy**: if the customer does not arrive and the professional is already attending the next appointment, the appointment is considered canceled.
-* **Payments**: only accepted on-site.
-* **Species**: only dogs and cats are treated.
+## Cómo ejecutar
 
-## 🧱 Technologies and Constraints
+1. Clonar o descargar el proyecto
+2. Abrir `index.html` en el navegador
 
-* HTML5 + CSS3 + Vanilla JavaScript
-* No external frameworks/libraries at runtime
-* No backend / no database
-* Persistence: LocalStorage
-* Navigable prototype (not production-ready)
-* **Testing (development): Jest**
+> Recomendado: usar Live Server para trabajar con mayor comodidad.
 
-## 🗂️ Project Structure
-
-The project follows a clear separation of responsibilities:
-
-* `index.html`: interface structure and sections.
-* `styles.css`: styling and responsive design.
-* `src/app.js`: DOM interaction, event handling, and LocalStorage persistence **without business rules**.
-* `src/core/`: pure system logic + validations (no DOM access), designed to be testable with unit tests.
-
-## ▶️ How to Run Locally
-
-1. Clone or download the project.
-2. Open `index.html` in the browser.
-
-> Recommended: use an extension such as **Live Server** to avoid path issues when working with modules/files.
-
-## ✅ Testing (with Jest)
-
-The logic core located in `src/core/` is designed to be unit testable (it does not depend on the DOM).
-
-### Requirements
-
-* Node.js + npm
-
-### Installation
+## Testing
 
 ```bash
 npm install
-```
-
-### Run tests
-
-```bash
 npm test
 ```
 
-### Run tests in watch mode (optional)
+## Acceso administrador
 
-```bash
-npm test -- --watch
-```
+- **Usuario:** `admin@veterinaria`
+- **Contraseña:** `admin123`
 
-### View coverage (optional)
+## Autores
 
-```bash
-npm test -- --coverage
-```
-
-### Test Scope
-
-Unit tests focus on:
-
-* Calculation of available time slots by professional and date
-* Booking validations (required data, valid date/time, etc.)
-* Business rules (duration by service, opening hours, no overlapping appointments)
-* **Simulated** persistence (if applicable) through function injection or mocks (without depending on the DOM)
-
-## 🔐 Administrator Access
-
-To enter the administration panel, use:
-
-* **Username:** `admin@veterinaria`
-* **Password:** `admin123`
-
-> Note: these credentials are for academic/demo use of the prototype.
-
-## 📎 Documentation
-
-This repository is based on the requirement gathering, design, planning, and testing document developed for the academic project (Software Engineering Workshop).
-
-## ✍️ Authors
-
-* Rodrigo Pintos Alvariza
-* Eduardo Monzón
-* Mateo Bragunde Dufour
-
----
+- Rodrigo Pintos Alvariza
+- Eduardo Monzón
+- Mateo Bragagunde Dufour
