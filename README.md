@@ -1,126 +1,126 @@
-# Veterinaria Huellas — Sistema de Gestión de Turnos (Prototipo Web)
+# Veterinaria Huellas — Appointment Management System (Web Prototype)
 
-Prototipo web navegable (100% client-side) para la gestión digital de turnos de la veterinaria **Huellas**, orientado a reducir la carga operativa telefónica y permitir la autogestión de reservas por parte de los clientes, manteniendo el control interno de la agenda por parte del administrador.
-El sistema **no utiliza backend ni base de datos**, trabaja con **datos precargados** y persistencia mediante **LocalStorage**.
+A navigable web prototype (100% client-side) for the digital management of appointments for **Huellas Veterinary Clinic**, designed to reduce the operational burden of phone scheduling and allow customers to self-manage bookings, while maintaining internal agenda control by the administrator.  
+The system **does not use a backend or database**; it works with **preloaded data** and persistence through **LocalStorage**.
 
-## 🎯 Objetivos
+## 🎯 Objectives
 
-* Permitir que el visitante consulte servicios y precios de forma clara.
-* Permitir que el cliente reserve turnos online mostrando **solo horarios disponibles**.
-* Permitir al administrador visualizar y cancelar reservas para controlar la agenda diaria.
-* Validar la solución mediante un prototipo navegable antes de una inversión mayor.
+* Allow visitors to view services and prices clearly.
+* Allow customers to book appointments online by showing **only available time slots**.
+* Allow the administrator to view and cancel reservations in order to control the daily schedule.
+* Validate the solution through a navigable prototype before making a larger investment.
 
-## 👥 Actores
+## 👥 Actors
 
-* **Visitante**: navega el sitio y consulta información general (servicios, equipo, contacto).
-* **Cliente**: visitante que inicia y completa el proceso de reserva.
-* **Administrador**: accede con credenciales y gestiona reservas (listar/cancelar).
+* **Visitor**: browses the site and checks general information (services, team, contact).
+* **Customer**: a visitor who starts and completes the booking process.
+* **Administrator**: logs in with credentials and manages reservations (list/cancel).
 
-## 🧩 Funcionalidades principales (resumen)
+## 🧩 Main Features (Summary)
 
-* Visualización de servicios (título, descripción, precio fijo).
-* Servicios en tarjetas tipo carrusel (loop con intervalos regulares).
-* Visualización del equipo (integrantes precargados).
-* Reserva de turno: datos del dueño/mascota + servicio + profesional + fecha + hora.
-* Horarios disponibles calculados según reglas de negocio y turnos ya reservados.
-* Confirmación visual de reserva.
-* Acceso administrador (login) + listado por día + cancelación con confirmación.
-* Persistencia local de reservas con LocalStorage.
+* Display of services (title, description, fixed price).
+* Services shown in carousel-style cards (loop with regular intervals).
+* Display of the team (preloaded members).
+* Appointment booking: owner/pet information + service + professional + date + time.
+* Available time slots calculated according to business rules and existing reservations.
+* Visual booking confirmation.
+* Administrator access (login) + daily listing + cancellation with confirmation.
+* Local persistence of reservations using LocalStorage.
 
-## 📌 Reglas de negocio
+## 📌 Business Rules
 
-* **Horarios de atención**: lunes a viernes 9:00–18:00; sábados hasta el mediodía; domingos cerrado.
-* **Duración de turnos**:
+* **Opening hours**: Monday to Friday 9:00 AM–6:00 PM; Saturdays until noon; closed on Sundays.
+* **Appointment duration**:
 
-  * 30 minutos: servicios clínico-médicos
-  * 60 minutos: estética, baño y corte de uñas
-* **Política de retrasos**: si el cliente no se presenta y el profesional ya atiende el siguiente turno, el turno se considera cancelado.
-* **Pagos**: exclusivamente en el local.
-* **Especies**: atención exclusiva de perros y gatos.
+  * 30 minutes: clinical and medical services
+  * 60 minutes: grooming, bathing, and nail trimming
+* **Late arrival policy**: if the customer does not arrive and the professional is already attending the next appointment, the appointment is considered canceled.
+* **Payments**: only accepted on-site.
+* **Species**: only dogs and cats are treated.
 
-## 🧱 Tecnologías y restricciones
+## 🧱 Technologies and Constraints
 
-* HTML5 + CSS3 + JavaScript Vanilla
-* Sin frameworks/librerías externas (en runtime)
-* Sin backend / sin base de datos
-* Persistencia: LocalStorage
-* Prototipo navegable (no productivo)
-* **Testing (desarrollo): Jest**
+* HTML5 + CSS3 + Vanilla JavaScript
+* No external frameworks/libraries at runtime
+* No backend / no database
+* Persistence: LocalStorage
+* Navigable prototype (not production-ready)
+* **Testing (development): Jest**
 
-## 🗂️ Estructura del proyecto
+## 🗂️ Project Structure
 
-El proyecto respeta una separación clara de responsabilidades:
+The project follows a clear separation of responsibilities:
 
-* `index.html`: estructura de la interfaz y secciones.
-* `styles.css`: estilos y responsive.
-* `src/app.js`: interacción con el DOM, manejo de eventos y persistencia en LocalStorage **sin reglas de negocio**.
-* `src/core/`: lógica pura del sistema + validaciones (sin acceso al DOM), diseñada para ser testeable con pruebas unitarias.
+* `index.html`: interface structure and sections.
+* `styles.css`: styling and responsive design.
+* `src/app.js`: DOM interaction, event handling, and LocalStorage persistence **without business rules**.
+* `src/core/`: pure system logic + validations (no DOM access), designed to be testable with unit tests.
 
-## ▶️ Cómo ejecutar (local)
+## ▶️ How to Run Locally
 
-1. Clonar o descargar el proyecto.
-2. Abrir `index.html` en el navegador.
+1. Clone or download the project.
+2. Open `index.html` in the browser.
 
-> Recomendado: usar una extensión tipo **Live Server** para evitar problemas de rutas al trabajar con módulos/archivos.
+> Recommended: use an extension such as **Live Server** to avoid path issues when working with modules/files.
 
-## ✅ Testing (con Jest)
+## ✅ Testing (with Jest)
 
-El núcleo de lógica ubicado en `src/core/` está diseñado para ser testeable unitariamente (no depende del DOM).
+The logic core located in `src/core/` is designed to be unit testable (it does not depend on the DOM).
 
-### Requisitos
+### Requirements
 
 * Node.js + npm
 
-### Instalación
+### Installation
 
 ```bash
 npm install
 ```
 
-### Ejecutar pruebas
+### Run tests
 
 ```bash
 npm test
 ```
 
-### Ejecutar pruebas en modo watch (opcional)
+### Run tests in watch mode (optional)
 
 ```bash
 npm test -- --watch
 ```
 
-### Ver cobertura (opcional)
+### View coverage (optional)
 
 ```bash
 npm test -- --coverage
 ```
 
-### Alcance de las pruebas
+### Test Scope
 
-Las pruebas unitarias se enfocan en:
+Unit tests focus on:
 
-* Cálculo de horarios disponibles por profesional y fecha
-* Validaciones de reserva (datos obligatorios, fecha/hora válidas, etc.)
-* Reglas de negocio (duración por servicio, horarios de atención, no solapamiento)
-* Persistencia **simulada** (si corresponde) mediante inyección de funciones o mocks (sin depender del DOM)
+* Calculation of available time slots by professional and date
+* Booking validations (required data, valid date/time, etc.)
+* Business rules (duration by service, opening hours, no overlapping appointments)
+* **Simulated** persistence (if applicable) through function injection or mocks (without depending on the DOM)
 
-## 🔐 Acceso administrador
+## 🔐 Administrator Access
 
-Para ingresar al panel de administración usá:
+To enter the administration panel, use:
 
-* **Usuario:** `admin@veterinaria`
-* **Contraseña:** `admin123`
+* **Username:** `admin@veterinaria`
+* **Password:** `admin123`
 
-> Nota: estas credenciales son para uso académico/demostración del prototipo.
+> Note: these credentials are for academic/demo use of the prototype.
 
-## 📎 Documentación
+## 📎 Documentation
 
-Este repositorio se basa en el documento de relevamiento, diseño, planificación y testing del obligatorio (Taller de Ingeniería de Software).
+This repository is based on the requirement gathering, design, planning, and testing document developed for the academic project (Software Engineering Workshop).
 
-## ✍️ Autores
+## ✍️ Authors
 
 * Rodrigo Pintos Alvariza
 * Eduardo Monzón
-* Mateo Bragagunde Dufour
+* Mateo Bragunde Dufour
 
 ---
